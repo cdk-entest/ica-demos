@@ -117,18 +117,14 @@ export class RdsLambdaStack extends Stack {
       role,
       vpc,
       environment: {
-        SECRET_ARN:
-          (credentials.secret &&
-            credentials.secret?.secretArn.toString()) ||
-          "",
+        SECRET_ARN: rds.secret!.secretFullArn ? rds.secret!.secretFullArn : rds.secret!.secretArn,
       },
     });
 
     // output
     new CfnOutput(this, "SECRET_ARN", {
       value:
-        (credentials.secret && credentials.secret?.secretArn) ||
-        "",
+      rds.secret!.secretFullArn ? rds.secret!.secretFullArn : rds.secret!.secretArn,
     });
   }
 }
