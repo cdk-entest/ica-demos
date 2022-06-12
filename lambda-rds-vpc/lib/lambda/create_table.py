@@ -12,17 +12,10 @@ import boto3
 import pymysql
 
 #
-SECRET_ARN = "arn:aws:secretsmanager:ap-southeast-1:392194582387:secret:mysql-secret-name-QZlN2R"
+SECRET_ARN = "arn:aws:secretsmanager:ap-southeast-1:392194582387:secret:mysql-secret-name-Gakb30"
 
 # region
 REGION = 'ap-southeast-1'
-
-# db credentials => from secret manager
-# host = "database-3.c3x7jlemonqv.ap-southeast-1.rds.amazonaws.com"
-# user = "admin"
-# password = "Mike865525"
-# port = 3306
-# dbName = 'IcaDb'
 
 # get credenetials
 secrete_client = boto3.client('secretsmanager', region_name=REGION)
@@ -143,6 +136,6 @@ def fetch_data(database: str):
 # test
 if __name__ == "__main__":
     # create_database(database="IcaDb")
-    # create_table(database="IcaDb")
-    fetch_data(database="IcaDb")
+    create_table(database="IcaDb")
+    # fetch_data(database="IcaDb")
     # pass

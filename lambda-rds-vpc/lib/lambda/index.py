@@ -3,15 +3,14 @@
 - simple lambda function
 - double check the lambda handler name 
 """
-
+import os 
 import datetime
 import json
 import boto3
 import pymysql
 
-# production => from os.env['SECRET_ARN']
-SECRET_ARN = "arn:aws:secretsmanager:ap-southeast-1:392194582387:secret:mysql-secret-name-QZlN2R"
-
+# get secret arn from lambda env variable 
+SECRET_ARN = os.environ['SECRET_ARN']
 # region
 REGION = 'ap-southeast-1'
 
