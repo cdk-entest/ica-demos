@@ -2,13 +2,15 @@
 dynamodb dax demo 
 """
 
-import os 
+import os
+from tokenize import Double 
 import amazondax 
 import boto3
 import random 
 import datetime
 from boto3.dynamodb.conditions import Key
 import time
+import matplotlib.pyplot as plt
 
 # configure region 
 REGION = os.environ.get("AWS_DEFAULT_REGION", "ap-southeast-1")
@@ -114,7 +116,7 @@ def get_item_by_id(table_name: str, user_id: str) -> None:
 
 
 
-def get_items_wo_dax(table_name: str, no_iter: int) -> None:
+def get_items_wo_dax(table_name: str, no_iter: int) -> Double:
   """
   measure time lag when getting items 
   """
@@ -136,10 +138,12 @@ def get_items_wo_dax(table_name: str, no_iter: int) -> None:
   # time lag
   time_lag = (end - start) * 1000 
   print(f'witout dax: time lag total: {time_lag}ms, per loop: {time_lag/no_iter}ms, per query: {time_lag/(no_iter * len(USER_IDS))}ms')
+  # return 
+  return time_lag/(no_iter * len(USER_IDS))
 
 
 
-def get_items_wi_dax(table_name: str, no_iter: int) -> None:
+def get_items_wi_dax(table_name: str, no_iter: int) -> Double:
   """
   measure time when getting items with dax 
   """
@@ -165,6 +169,9 @@ def get_items_wi_dax(table_name: str, no_iter: int) -> None:
   # time lag
   time_lag = (end - start) * 1000 
   print(f'with dax: time lag total: {time_lag}ms, per loop: {time_lag/no_iter}ms, per query: {time_lag/(no_iter * len(USER_IDS))}ms')
+  # return 
+  return time_lag/(no_iter * len(USER_IDS))
+
 
 
 def delete_table(table_name) -> None:
@@ -186,6 +193,12 @@ if __name__=="__main__":
   # get_items_wo_dax(table_name, 10)
   # get_items_wi_dax(table_name, 10)
   # delete_table("DaxTable")
-  for k in range(10):
-    get_items_wo_dax(table_name, 10)
-    get_items_wi_dax(table_name, 10)
+  time_lags_wo_dax = [get_items_wo_dax(table_name, 10) for k in range(10)]
+  time_lags_wi_dax = [get_items_wi_dax(table_name, 10) for k in range(10)]
+  fig,axes = plt.subplots(1,1,figsize=(10,5))
+  axes.plot(time_lags_wo_dax,'k-o')
+  axes.plot(time_lags_wi_dax,'b-o')
+  axes.legend(['wo-dax','wi-dax'])
+  axes.set_ylabel('milisecond')
+  fig.suptitle('DAX performance')
+  fig.savefig('dax_performance.png')
