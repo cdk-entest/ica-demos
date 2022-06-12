@@ -1,4 +1,21 @@
 # DynamoDB DAX Performance 
+[Customers: Tinder, Cannon, Careem](https://aws.amazon.com/dynamodb/dax/)
+
+
+[What use cases/When to use?](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html) 
+- Single digit milisecond latency
+- Less operation and complexity 
+- Handle read-heavy and bursty workloads 
+
+Concepts/Parameters:
+- [Consistency model](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html)
+- [Modify application](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.client.modify-your-app.html)
+- [TTL setting](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.cluster-management.html#DAX.cluster-management.custom-settings.ttl)
+- [Encryption, KMS, TLS](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionInTransit.html)
+
+References:
+- [Read/Write-through cache - transparent to application](https://aws.amazon.com/blogs/database/amazon-dynamodb-accelerator-dax-a-read-throughwrite-through-cache-for-dynamodb/)
+
 
 ## Architecture 
 ![dax_high_level e4af7cc27485497eff5699cdf22a9502496cba38](https://user-images.githubusercontent.com/20411077/173214194-f539fe34-638a-4ad0-b1e7-16dc7dfef642.png)
