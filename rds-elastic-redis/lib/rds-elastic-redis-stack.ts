@@ -142,7 +142,7 @@ export class RdsElasticRedisStack extends Stack {
         engine: "redis",
         cacheNodeType: "cache.t3.small",
         numCacheNodes: 1,
-        cacheSubnetGroupName: "",
+        cacheSubnetGroupName: subnetGroup.cacheSubnetGroupName,
         vpcSecurityGroupIds: [
           redisSecurityGroup.securityGroupId,
         ],
