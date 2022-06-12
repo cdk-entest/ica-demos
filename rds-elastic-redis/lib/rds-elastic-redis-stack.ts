@@ -3,13 +3,13 @@ import {
   aws_elasticache,
   aws_iam,
   aws_rds,
-  aws_secretsmanager,
   CfnOutput,
   RemovalPolicy,
   Stack,
   StackProps,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
+import * as fs from "fs";
 
 interface RdsElasticRedisStackProps extends StackProps {
   vpcId: string;
@@ -47,7 +47,7 @@ export class RdsElasticRedisStack extends Stack {
       this,
       "SecurityGroupForRedisCulster",
       {
-        securityGroupName: "SecurityGroupForRedisCluster",
+        securityGroupName: "SecurityGroupForRedisCulster",
         vpc: vpc,
       }
     );
@@ -92,7 +92,7 @@ export class RdsElasticRedisStack extends Stack {
         webAppSecurityGroup.securityGroupId
       ),
       // redis port
-      aws_ec2.Port.tcp(6397)
+      aws_ec2.Port.tcp(6379)
     );
 
     // rds mysql database
@@ -100,8 +100,7 @@ export class RdsElasticRedisStack extends Stack {
       this,
       "RdsDatabaseRedisDemo",
       {
-        databaseName: "RdsRedisDemo",
-
+        databaseName: "covid",
         deletionProtection: false,
         engine: aws_rds.DatabaseInstanceEngine.mysql({
           version: aws_rds.MysqlEngineVersion.VER_8_0_23,
@@ -142,7 +141,7 @@ export class RdsElasticRedisStack extends Stack {
         engine: "redis",
         cacheNodeType: "cache.t3.small",
         numCacheNodes: 1,
-        cacheSubnetGroupName: subnetGroup.cacheSubnetGroupName,
+        cacheSubnetGroupName: subnetGroup.ref,
         vpcSecurityGroupIds: [
           redisSecurityGroup.securityGroupId,
         ],
@@ -191,7 +190,7 @@ export class RdsElasticRedisStack extends Stack {
     );
 
     // ec2 web app server
-    new aws_ec2.Instance(this, "Ec2RdsRedisDemo", {
+    const ec2 = new aws_ec2.Instance(this, "Ec2RdsRedisDemo", {
       instanceName: "Ec2RdsRedisDemo",
       instanceType: aws_ec2.InstanceType.of(
         aws_ec2.InstanceClass.T3,
@@ -210,11 +209,36 @@ export class RdsElasticRedisStack extends Stack {
       },
     });
 
+    // add user data for ec2
+    ec2.addUserData(
+      fs.readFileSync("./lib/user-data.sh", "utf8")
+    );
+
     // output
     new CfnOutput(this, "RdsSecreteArnFull", {
       value: rds.secret!.secretFullArn
         ? rds.secret!.secretFullArn
         : rds.secret!.secretArn,
+    });
+
+    new CfnOutput(this, "secret_name", {
+      value: rds.secret!.secretName,
+    });
+
+    new CfnOutput(this, "mysql_endpoint", {
+      value: rds.dbInstanceEndpointAddress,
+    });
+
+    new CfnOutput(this, "redis_endpoint", {
+      value: redis.attrRedisEndpointAddress,
+    });
+
+    new CfnOutput(this, "webserver_public_ip", {
+      value: ec2.instancePublicIp,
+    });
+
+    new CfnOutput(this, "webserver_public_url", {
+      value: ec2.instancePublicDnsName,
     });
   }
 }

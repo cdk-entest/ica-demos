@@ -5,7 +5,7 @@ import { RdsElasticRedisStack } from "../lib/rds-elastic-redis-stack";
 
 const app = new cdk.App();
 
-new RdsElasticRedisStack(app, "DynamodbDaxStack", {
+new RdsElasticRedisStack(app, "RdsElasticRedisStack", {
   vpcName: "MyNetworkStack/VpcWithS3Endpoint",
   vpcId: "vpc-07cafc6a819930727",
   env: {
