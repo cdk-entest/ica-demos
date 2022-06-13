@@ -1,5 +1,6 @@
 """
-dynamodb dax demo 
+Hai Tran: 12 JUN 2022 
+DynamoDB with DAX Performance 
 """
 
 import os
@@ -82,7 +83,13 @@ def write_table(table_name: str) -> None:
   write data items to a table 
   """
   # table 
-  table = get_table(table_name)
+  # table = get_table(table_name)
+  # dax client 
+  dax = amazondax.AmazonDaxClient.resource(
+    endpoint_url=DAX_ENDPOINT
+  )
+  # table  
+  table = dax.Table(table_name)
   # create a new item
   for game_title in GAME_TITLES:
       for user_id in USER_IDS:
@@ -127,11 +134,14 @@ def get_items_wo_dax(table_name: str, no_iter: int) -> Double:
   # loop no_iter
   for k in range(no_iter):
     # loop over user_ids
-    for user_id in USER_IDS:
+    for user_id in USER_IDS[1:]:
+      start_item = time.time()
       # query by user_id 
       res = table.query(
         KeyConditionExpression=Key('UserId').eq(user_id),
         ScanIndexForward=False)
+      end_item = time.time()
+      print(f'latency item {(end_item - start_item) * 1000} ms')
       # print(res)
   # end time 
   end = time.time()
@@ -160,10 +170,13 @@ def get_items_wi_dax(table_name: str, no_iter: int) -> Double:
     # loop over user_ids
     for user_id in USER_IDS:
       # query by user_id 
+      start_item = time.time()
       res = table.query(
         KeyConditionExpression=Key('UserId').eq(user_id),
         ScanIndexForward=False)
+      end_item = time.time()
       # print(res)
+      print(f'latency item {(end_item - start_item) * 1000} ms')
   # end time 
   end = time.time()
   # time lag
@@ -172,6 +185,30 @@ def get_items_wi_dax(table_name: str, no_iter: int) -> Double:
   # return 
   return time_lag/(no_iter * len(USER_IDS))
 
+
+
+def get_items_by_primary_key(table: str, mode='dax', no_iter=10) -> None:
+  """
+  """
+  # table 
+  if mode=='dax':
+    # dax client 
+    dax = amazondax.AmazonDaxClient.resource(
+      endpoint_url=DAX_ENDPOINT
+    )
+    # table  
+    table = dax.Table(table_name)
+  else:
+    table = get_table(table_name)
+  # 
+  for k in range(no_iter):
+    start = time.time()
+    res = table.get_item(
+      Key={"UserId": "120", "CreatedTime": 1655098896759}
+    )
+    end = time.time()
+    print(f'get-item tim: {(end-start)*1000}ms')
+    # print(res)
 
 
 def delete_table(table_name) -> None:
@@ -190,15 +227,18 @@ if __name__=="__main__":
   # create_table(table_name)
   # write_table(table_name)
   # get_item_by_id(table_name,"120")
-  # get_items_wo_dax(table_name, 10)
-  # get_items_wi_dax(table_name, 10)
+  # get_items_wo_dax(table_name, 1)
+  # get_items_wi_dax(table_name, 1)
   # delete_table("DaxTable")
-  time_lags_wo_dax = [get_items_wo_dax(table_name, 10) for k in range(10)]
-  time_lags_wi_dax = [get_items_wi_dax(table_name, 10) for k in range(10)]
-  fig,axes = plt.subplots(1,1,figsize=(10,5))
-  axes.plot(time_lags_wo_dax,'k-o')
-  axes.plot(time_lags_wi_dax,'b-o')
-  axes.legend(['wo-dax','wi-dax'])
-  axes.set_ylabel('milisecond')
-  fig.suptitle('DAX performance')
-  fig.savefig('dax_performance.png')
+  # time_lags_wo_dax = [get_items_wo_dax(table_name, 1) for k in range(20)]
+  # time_lags_wi_dax = [get_items_wi_dax(table_name, 1) for k in range(20)]
+  # fig,axes = plt.subplots(1,1,figsize=(10,5))
+  # axes.plot(time_lags_wo_dax,'k--o',markersize=5,linewidth=0.5)
+  # axes.plot(time_lags_wi_dax,'b--o',markersize=5,linewidth=0.5)
+  # axes.legend(['wo-dax','wi-dax'])
+  # axes.set_ylabel('milisecond')
+  # axes.set_xlabel('read db')
+  # fig.suptitle('DAX performance')
+  # fig.savefig('dax_performance.png')
+
+  get_items_by_primary_key(table_name, mode="dax", no_iter=100)

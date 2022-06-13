@@ -2,6 +2,7 @@ import {
   aws_dax,
   aws_ec2,
   aws_iam,
+  RemovalPolicy,
   Stack,
   StackProps,
 } from "aws-cdk-lib";
@@ -40,6 +41,10 @@ export class DynamodbDaxStack extends Stack {
       }
     );
 
+    subnetGroup.applyRemovalPolicy(
+      RemovalPolicy.DESTROY
+    )
+
     // parameter group
     const parameterGroup = new aws_dax.CfnParameterGroup(
       this,
@@ -54,6 +59,10 @@ export class DynamodbDaxStack extends Stack {
         },
       }
     );
+
+    parameterGroup.applyRemovalPolicy(
+      RemovalPolicy.DESTROY
+    )
 
     // role for dax cluster
     const role = new aws_iam.Role(
@@ -80,22 +89,22 @@ export class DynamodbDaxStack extends Stack {
       })
     );
 
-    // security group 
+    // security group
     const securityGroup = new aws_ec2.SecurityGroup(
       this,
       "SecurityGroupForDaxCluster",
       {
         securityGroupName: "SecurityGroupForDaxCluster",
-        vpc: vpc
+        vpc: vpc,
       }
-    )
+    );
 
     securityGroup.addIngressRule(
-      // production SG peer 
+      // production SG peer
       aws_ec2.Peer.anyIpv4(),
       // unencrypted 8111
-      aws_ec2.Port.tcp(8111),
-    )
+      aws_ec2.Port.tcp(8111)
+    );
 
     // create a dax cluster
     new aws_dax.CfnCluster(this, "DaxClusterDemo", {
@@ -114,9 +123,7 @@ export class DynamodbDaxStack extends Stack {
       parameterGroupName: parameterGroup.parameterGroupName,
       // range of time maintenance of DAX software performed
       // preferredMaintenanceWindow: "",
-      securityGroupIds: [
-        securityGroup.securityGroupId
-      ],
+      securityGroupIds: [securityGroup.securityGroupId],
       subnetGroupName: subnetGroup.subnetGroupName,
     });
   }
