@@ -13,7 +13,7 @@
       Query DDB Directly 
       {% for item in items %}
       <h3>
-        {{ item }}
+        UserId: {{ item['UserId'] }}, Score: {{ item["Wins"] }}, Game: {{ item["GameTitle"] }} latency: {{ item['latency']}}
       </h3>
       {% endfor %}
     </h1>
