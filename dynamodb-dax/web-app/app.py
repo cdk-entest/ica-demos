@@ -13,12 +13,12 @@ def index():
 
 @app.route("/query-dax")
 def query_dax():
-    dic = get_items_by_primary_key(TABLE_NAME, mode='dax', no_iter=100)
+    dic = get_items_by_primary_key(TABLE_NAME, mode='dax', no_user=100)
     return render_template('query_dax.html', items=dic['items'], latencies=dic['latencies'])
 
 @app.route("/query-ddb")
 def query_ddb():
-    dic = get_items_by_primary_key(TABLE_NAME, mode='ddb', no_iter=100)
+    dic = get_items_by_primary_key(TABLE_NAME, mode='ddb', no_user=100)
     return render_template('query_ddb.html', items=dic['items'], latencies=dic['latencies'])
 
 

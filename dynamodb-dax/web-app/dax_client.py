@@ -30,9 +30,7 @@ GAME_TITLES = [
 # number of thread 
 NUM_THREAD = 100
 # number of user 
-NUM_USER = 100000
-# query some users 
-USER_IDS_QUERY = ['8577287c-eb20-11ec-a8e5-022d3357acbe']
+NUM_USER = 1000
 # get a single user 
 USER_ID_SINGLE = '8577287c-eb20-11ec-a8e5-022d3357acbe'
 
@@ -67,30 +65,47 @@ def create_table(table_name: str) -> None:
 
 
 
-def get_table(table_name: str):
+def get_table(table_name: str, mode='ddb'):
   """
   get table 
-  """
-  # create ddb client
-  ddb = boto3.resource('dynamodb')
-  # table
-  table = ddb.Table(table_name)
-  # return 
-  return table 
-    
-
-
-def write_table(table_name: str, mode='dax') -> None:
-  """
-  write data items to a table 
   """
   if mode=='dax':
     # dax client 
     dax = amazondax.AmazonDaxClient.resource(endpoint_url=DAX_ENDPOINT)
     # table  
     table = dax.Table(table_name)
-  else:
-    table = get_table(table_name)
+  else: 
+    # create ddb client
+    ddb = boto3.resource('dynamodb')
+    # table
+    table = ddb.Table(table_name)
+  # return 
+  return table 
+    
+
+def scan_user_ids(table_name: str, no_user: int, mode='ddb'):
+  """
+  always return first no_user items 
+  """
+  # table 
+  table = get_table(table_name, mode)
+  # scan 
+  res = table.scan(
+    Limit=no_user
+  )
+  # print(res['Items'])
+  # return user ids 
+  user_ids = [item['UserId'] for item in res['Items']]
+  return user_ids
+
+
+
+def write_table(table_name: str, mode='dax') -> None:
+  """
+  write data items to a table 
+  """
+  # table
+  table = get_table(table_name, mode)
   # create a new item
   for game_title in GAME_TITLES:
       for k in range(NUM_USER):
@@ -116,7 +131,7 @@ def write_table_thread(table_name: str, mode='dax') -> None:
       executor.submit(write_table, TABLE_NAME)
 
 
-def get_items_by_primary_key(table_name: str, mode='dax', no_iter=10):
+def get_items_by_primary_key(table_name: str, mode='dax', no_user=100):
   """
   """
   # buffer items 
@@ -124,25 +139,19 @@ def get_items_by_primary_key(table_name: str, mode='dax', no_iter=10):
   # buffer time lags 
   latencies = []
   # table 
-  if mode=='dax':
-    # dax client 
-    dax = amazondax.AmazonDaxClient.resource(
-      endpoint_url=DAX_ENDPOINT
-    )
-    # table  
-    table = dax.Table(table_name)
-  else:
-    table = get_table(table_name)
+  table = get_table(table_name, mode)
+  # get user id 
+  user_ids = scan_user_ids(table_name, no_user, mode=mode)
   # loop get item 
-  for k in range(no_iter):
+  for user_id in user_ids:
     start = time.perf_counter()
     res = table.get_item(
-      Key={"UserId": USER_ID_SINGLE}
+      Key={"UserId": user_id}
     )
     end = time.perf_counter()
     # time lag in ms 
     duration = (end - start) * 1000
-    print(f'{mode} et-item latency: {duration:.4f}ms')
+    print(f'{mode} get-item {res["Item"]["UserId"]} latency: {duration:.4f}ms ')
     # print(res)
     # tag latency to each query 
     item = res['Item']
@@ -155,43 +164,35 @@ def get_items_by_primary_key(table_name: str, mode='dax', no_iter=10):
   return {"latencies": latencies[2:], "items": items[2:]}
 
 
-def query_items(table_name: str, mode='dax', no_iter=10): 
+def query_items(table_name: str, mode='dax', no_user=100): 
   """
   """
   # buffer time lags
   latencies = []
   # buffer items 
   items = []
-    # table 
-  if mode=='dax':
-    # dax client 
-    dax = amazondax.AmazonDaxClient.resource(
-      endpoint_url=DAX_ENDPOINT
-    )
-    # table  
-    table = dax.Table(table_name)
-  else:
-    table = get_table(table_name)
-  # query 
-  for k in range(no_iter):
-    # loop over user_ids
-    for user_id in USER_IDS_QUERY:
-      # query by user_id 
-      start = time.perf_counter()
-      res = table.query(
-        KeyConditionExpression=Key('UserId').eq(user_id),
-        ScanIndexForward=False)
-      end = time.perf_counter()
-      # time lag 
-      duration = (end - start) * 1000
-      print(f'{mode} latency query {duration:.4f} ms')
-      # tag latency to each query 
-      for item in res['Items']:
-        item['latency'] = duration
-      # parse items 
-      items += res['Items']
-      # buffer time lag 
-      latencies.append(duration)
+  # table
+  table = get_table(table_name, mode)
+  # get some user ids 
+  user_ids = scan_user_ids(table_name, no_user, mode)
+  # loop over user_ids
+  for user_id in user_ids:
+    # query by user_id 
+    start = time.perf_counter()
+    res = table.query(
+      KeyConditionExpression=Key('UserId').eq(user_id),
+      ScanIndexForward=False)
+    end = time.perf_counter()
+    # time lag 
+    duration = (end - start) * 1000
+    print(f'{mode} query latency {duration:.4f} ms')
+    # tag latency to each query 
+    for item in res['Items']:
+      item['latency'] = duration
+    # parse items 
+    items += res['Items']
+    # buffer time lag 
+    latencies.append(duration)
   # return 
   return {"latencies": latencies[2:], "items": items[2:]}
 
@@ -209,25 +210,22 @@ def delete_table(table_name) -> None:
 
 if __name__=="__main__":
   # create_table(TABLE_NAME)
-  # write_table(TABLE_NAME)
-  write_table_thread(TABLE_NAME)
+  # write_table(TABLE_NAME, mode='ddb')
+  # write_table_thread(TABLE_NAME)
+  # scan_user_ids(TABLE_NAME, no_user=10, mode='ddb')
   # get_item_by_id(table_name,"120")
   # get_items_wo_dax(table_name, 1)
   # get_items_wi_dax(table_name, 1)
   # delete_table(TABLE_NAME)
-  # latencies_wo_dax = get_items_by_primary_key(table_name, mode='ddb', no_iter=100)
-  # latencies_wi_dax = get_items_by_primary_key(table_name, mode='dax', no_iter=100)
-  # fig,axes = plt.subplots(1,1,figsize=(10,5))
-  # axes.plot(latencies_wo_dax[1:],'k--o',markersize=3,linewidth=0.5)
-  # axes.plot(latencies_wi_dax[1:],'b--o',markersize=3,linewidth=0.5)
-  # axes.legend(['wo-dax','wi-dax'])
-  # axes.set_ylabel('milisecond')
-  # axes.set_xlabel('read db')
-  # axes.set_yticks([k for k in range(10)])
-  # axes.set_ylim(0,10)
-  # fig.suptitle('DAX performance')
-  # fig.savefig('dax_performance.png')
-  # dic = query_items(TABLE_NAME,no_iter=1)
-  # dic = get_items_by_primary_key(TABLE_NAME, no_iter=100)
-  # print(dic)
-
+  dic_wo_dax = get_items_by_primary_key(TABLE_NAME, mode='ddb', no_user=100)
+  dic_wi_dax = get_items_by_primary_key(TABLE_NAME, mode='dax', no_user=100)
+  fig,axes = plt.subplots(1,1,figsize=(10,5))
+  axes.plot(dic_wo_dax['latencies'][1:],'k--o',markersize=3,linewidth=0.5)
+  axes.plot(dic_wi_dax['latencies'][1:],'b--o',markersize=3,linewidth=0.5)
+  axes.legend(['wo-dax','wi-dax'])
+  axes.set_ylabel('milisecond')
+  axes.set_xlabel('read db')
+  axes.set_yticks([k for k in range(10)])
+  axes.set_ylim(0,10)
+  fig.suptitle('DAX performance')
+  fig.savefig('dax_performance.png')
