@@ -133,43 +133,39 @@ create a DAX cluster
   });
 ```
 
-## DAX Performance Check 
+## DAX Client Performance Check 
 [amazondax python client](https://pypi.org/project/amazon-dax-client/) 
 ```python 
-  # dax client 
-  dax = amazondax.AmazonDaxClient.resource(
-    endpoint_url=DAX_ENDPOINT
-  )
-```
-```python 
-def get_items_wi_dax(table_name: str, no_iter: int) -> Double:
+def get_items_by_primary_key(table: str, mode='dax', no_iter=10):
   """
-  measure time when getting items with dax 
   """
-  # dax client 
-  dax = amazondax.AmazonDaxClient.resource(
-    endpoint_url=DAX_ENDPOINT
-  )
-  # table  
-  table = dax.Table(table_name)
-  # start time 
-  start = time.time()
-  # loop no_iter
+  # buffer time lags 
+  time_lags = []
+  # table 
+  if mode=='dax':
+    # dax client 
+    dax = amazondax.AmazonDaxClient.resource(
+      endpoint_url=DAX_ENDPOINT
+    )
+    # table  
+    table = dax.Table(table_name)
+  else:
+    table = get_table(table_name)
+  # loop get item 
   for k in range(no_iter):
-    # loop over user_ids
-    for user_id in USER_IDS:
-      # query by user_id 
-      res = table.query(
-        KeyConditionExpression=Key('UserId').eq(user_id),
-        ScanIndexForward=False)
-      # print(res)
-  # end time 
-  end = time.time()
-  # time lag
-  time_lag = (end - start) * 1000 
-  print(f'with dax: time lag total: {time_lag}ms, per loop: {time_lag/no_iter}ms, per query: {time_lag/(no_iter * len(USER_IDS))}ms')
+    start = time.perf_counter()
+    res = table.get_item(
+      Key={"UserId": "120", "CreatedTime": 1655098896759}
+    )
+    end = time.perf_counter()
+    # time lag in ms 
+    duration = (end - start) * 1000
+    print(f'{mode} et-item latency: {duration:.4f}ms')
+    time_lags.append(duration)
+    # response 
+    print(res)
   # return 
-  return time_lag/(no_iter * len(USER_IDS))
+  return time_lags
 ```
 
 ## DynamoDB Table and Prepare Data 
@@ -233,38 +229,4 @@ def write_table(table_name: str) -> None:
               }
           )
           print(res)
-```
-
-## Get item with DAX client 
-```python 
-def get_items_by_primary_key(table: str, mode='dax', no_iter=10):
-  """
-  """
-  # buffer time lags 
-  time_lags = []
-  # table 
-  if mode=='dax':
-    # dax client 
-    dax = amazondax.AmazonDaxClient.resource(
-      endpoint_url=DAX_ENDPOINT
-    )
-    # table  
-    table = dax.Table(table_name)
-  else:
-    table = get_table(table_name)
-  # loop get item 
-  for k in range(no_iter):
-    start = time.perf_counter()
-    res = table.get_item(
-      Key={"UserId": "120", "CreatedTime": 1655098896759}
-    )
-    end = time.perf_counter()
-    # time lag in ms 
-    duration = (end - start) * 1000
-    print(f'{mode} et-item latency: {duration:.4f}ms')
-    time_lags.append(duration)
-    # response 
-    print(res)
-  # return 
-  return time_lags
 ```
