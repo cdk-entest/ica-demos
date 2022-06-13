@@ -24,6 +24,9 @@ GAME_TITLES = [
 ]
 # user or player id
 USER_IDS = [str(x) for x in range(100, 121)]
+# user_id and time_stamp to get 
+USER_ID_CHECK = "120" 
+CREATED_TIME_CHECK = 1655098896759
 
 
 def create_table(table_name: str) -> None:
@@ -124,7 +127,7 @@ def get_items_by_primary_key(table: str, mode='dax', no_iter=10):
   for k in range(no_iter):
     start = time.perf_counter()
     res = table.get_item(
-      Key={"UserId": "120", "CreatedTime": 1655098896759}
+      Key={"UserId": USER_ID_CHECK, "CreatedTime": CREATED_TIME_CHECK}
     )
     end = time.perf_counter()
     # time lag in ms 
@@ -132,7 +135,7 @@ def get_items_by_primary_key(table: str, mode='dax', no_iter=10):
     print(f'{mode} et-item latency: {duration:.4f}ms')
     time_lags.append(duration)
     # response 
-    print(res)
+    # print(res)
   # return 
   return time_lags
 
