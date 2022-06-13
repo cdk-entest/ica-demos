@@ -19,8 +19,8 @@ References:
 
 ## Architecture 
 ![dax_high_level e4af7cc27485497eff5699cdf22a9502496cba38](https://user-images.githubusercontent.com/20411077/173214194-f539fe34-638a-4ad0-b1e7-16dc7dfef642.png)
+![dax_performance](https://user-images.githubusercontent.com/20411077/173296706-6ad579f8-9a89-4bc7-bd37-313b6cacfa49.png)
 
-![dax_performance](https://user-images.githubusercontent.com/20411077/173214201-8f994508-a2b1-450c-b135-2ecb1b1aa600.png)
 
 ## DAX Cluster Stack 
 subnet group 
