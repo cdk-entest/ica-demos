@@ -234,3 +234,37 @@ def write_table(table_name: str) -> None:
           )
           print(res)
 ```
+
+## Get item with DAX client 
+```python 
+def get_items_by_primary_key(table: str, mode='dax', no_iter=10):
+  """
+  """
+  # buffer time lags 
+  time_lags = []
+  # table 
+  if mode=='dax':
+    # dax client 
+    dax = amazondax.AmazonDaxClient.resource(
+      endpoint_url=DAX_ENDPOINT
+    )
+    # table  
+    table = dax.Table(table_name)
+  else:
+    table = get_table(table_name)
+  # loop get item 
+  for k in range(no_iter):
+    start = time.perf_counter()
+    res = table.get_item(
+      Key={"UserId": "120", "CreatedTime": 1655098896759}
+    )
+    end = time.perf_counter()
+    # time lag in ms 
+    duration = (end - start) * 1000
+    print(f'{mode} et-item latency: {duration:.4f}ms')
+    time_lags.append(duration)
+    # response 
+    print(res)
+  # return 
+  return time_lags
+```
