@@ -3,8 +3,9 @@
 
 
 [What use cases/When to use?](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html) 
-- Single digit milisecond latency
-- Less operation and complexity 
+- DynamoDB 
+- Single digit milisecond latency (micro-second)
+- Less operation and complexity (easy code change)
 - Handle read-heavy and bursty workloads 
 
 Concepts/Parameters:
