@@ -1,5 +1,9 @@
 # Migrate a Microsoft SQL Server DB to a Amazon RDS 
 
+## Architecture 
+
+![aws_devops-ica drawio](https://user-images.githubusercontent.com/20411077/173564514-85fba849-5f04-4cd2-ba29-eab47b8b6e0e.png)
+
 Reference 
 - [AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US)
 - [Developer Center](https://aws.amazon.com/getting-started/hands-on/move-to-managed/migrate-sql-server-to-amazon-rds/)
@@ -26,11 +30,6 @@ Best practices
 - [continuous database replication](https://aws.amazon.com/blogs/database/continuous-database-replication-using-aws-dms-to-migrate-from-oracle-to-amazon-aurora/)
 - [Migration and modernization strategies](https://aws.amazon.com/blogs/modernizing-with-aws/migration-modernization-strategies-sql-on-aws/)
 - [need help](https://aws.amazon.com/products/databases/migrations/)
-
-## Architecture 
-
-![aws_devops-ica drawio](https://user-images.githubusercontent.com/20411077/173564514-85fba849-5f04-4cd2-ba29-eab47b8b6e0e.png)
-
 
 ## Source Ec2 with Microsoft SQL 
 security group ec2 
