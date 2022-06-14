@@ -29,6 +29,9 @@ Best practices
 
 ## Architecture 
 
+![aws_devops-ica drawio](https://user-images.githubusercontent.com/20411077/173564514-85fba849-5f04-4cd2-ba29-eab47b8b6e0e.png)
+
+
 ## Source Ec2 with Microsoft SQL 
 security group ec2 
 ```tsx
