@@ -19,7 +19,7 @@ Performance
   - Launch in a private subnet 
   - Security group (Redis 6739, Memcached 11211)
   - Encryption TSL/SSL 
-  - [Lazy vs write-through - page 19](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
+  - [Lazy vs write-through](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
 
 ## Architecture 
 
