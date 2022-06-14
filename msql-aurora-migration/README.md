@@ -1,6 +1,31 @@
 # Migrate a Microsoft SQL Server DB to a Amazon RDS 
 
-[Reference](https://aws.amazon.com/getting-started/hands-on/move-to-managed/migrate-sql-server-to-amazon-rds/)
+Reference 
+- [AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US)
+- [Developer Center](https://aws.amazon.com/getting-started/hands-on/move-to-managed/migrate-sql-server-to-amazon-rds/)
+- [Database Freedom](https://aws.amazon.com/solutions/databasemigrations/database-freedom/)
+
+Customers
+- [IPG Japan TV](https://aws.amazon.com/blogs/database/continuous-database-replication-using-aws-dms-to-migrate-from-oracle-to-amazon-aurora/)
+- [Verison](https://aws.amazon.com/dms/)
+
+When to use? 
+- Migrate to AWS and benefit
+- Modernize applications 
+
+Migration paths 
+- Lift and shift 
+- Replatforming 
+- Refactoring 
+
+Essential concepts
+- [AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html)
+- [AWS SCT](https://aws.amazon.com/dms/schema-conversion-tool/)
+
+Best practices 
+- [continuous database replication](https://aws.amazon.com/blogs/database/continuous-database-replication-using-aws-dms-to-migrate-from-oracle-to-amazon-aurora/)
+- [Migration and modernization strategies](https://aws.amazon.com/blogs/modernizing-with-aws/migration-modernization-strategies-sql-on-aws/)
+- [need help](https://aws.amazon.com/products/databases/migrations/)
 
 ## Architecture 
 
@@ -62,7 +87,7 @@ role.attachInlinePolicy(
   })
 );
 ```
-Ec2 hosting a Microsoft SQL 
+Ec2 hosting a Microsoft SQL **ami-08c6f23674b803e33** includes of a Microsoft SQL 
 ```tsx
 // ec2 host MySQL
 const ec2 = new aws_ec2.Instance(this, "Ec2HostMySQLDemo", {
