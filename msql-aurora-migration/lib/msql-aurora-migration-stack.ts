@@ -11,18 +11,23 @@ import {
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-interface MysqlAuroraMigrationStackProps extends StackProps {
+interface DatabasesStackProps extends StackProps {
   vpcId: string;
   vpcName: string;
   amiImage: string;
   keyPair: string;
 }
 
-export class MysqlAuroraMigrationStack extends Stack {
+export class DatabaseStack extends Stack {
+  public readonly ec2: aws_ec2.Instance;
+  public readonly rds: aws_rds.DatabaseInstance;
+  public readonly ec2SecurityGrroup: aws_ec2.SecurityGroup;
+  public readonly dbSecurityGroup: aws_ec2.SecurityGroup;
+
   constructor(
     scope: Construct,
     id: string,
-    props: MysqlAuroraMigrationStackProps
+    props: DatabasesStackProps
   ) {
     super(scope, id, props);
 
@@ -33,7 +38,7 @@ export class MysqlAuroraMigrationStack extends Stack {
     });
 
     // security group
-    const ec2MySqlSecurityGroup = new aws_ec2.SecurityGroup(
+    this.ec2SecurityGrroup = new aws_ec2.SecurityGroup(
       this,
       "SecurityGroupForEc2MySql",
       {
@@ -42,25 +47,13 @@ export class MysqlAuroraMigrationStack extends Stack {
       }
     );
 
-    ec2MySqlSecurityGroup.addIngressRule(
+    this.ec2SecurityGrroup.addIngressRule(
       // RDP access
       aws_ec2.Peer.anyIpv4(),
       aws_ec2.Port.tcp(1521)
     );
 
-    ec2MySqlSecurityGroup.addIngressRule(
-      // sql server access
-      aws_ec2.Peer.anyIpv4(),
-      aws_ec2.Port.tcp(3306)
-    );
-
-    ec2MySqlSecurityGroup.addIngressRule(
-      // sql server access
-      aws_ec2.Peer.anyIpv4(),
-      aws_ec2.Port.tcp(3389)
-    );
-
-    ec2MySqlSecurityGroup.addIngressRule(
+    this.ec2SecurityGrroup.addIngressRule(
       // sql server access
       aws_ec2.Peer.anyIpv4(),
       aws_ec2.Port.tcp(1433)
@@ -104,7 +97,7 @@ export class MysqlAuroraMigrationStack extends Stack {
     );
 
     // ec2 host MySQL
-    const ec2 = new aws_ec2.Instance(this, "Ec2HostMySQLDemo", {
+    this.ec2 = new aws_ec2.Instance(this, "Ec2HostMySQLDemo", {
       instanceName: "Ec2HostMySqlDemo",
       keyName: props.keyPair,
       instanceType: aws_ec2.InstanceType.of(
@@ -126,14 +119,14 @@ export class MysqlAuroraMigrationStack extends Stack {
       }),
       vpc: vpc,
       role: role,
-      securityGroup: ec2MySqlSecurityGroup,
+      securityGroup: this.ec2SecurityGrroup,
       vpcSubnets: {
         subnetType: aws_ec2.SubnetType.PUBLIC,
       },
     });
 
     // db security group
-    const dbSecurityGroup = new aws_ec2.SecurityGroup(
+    this.dbSecurityGroup = new aws_ec2.SecurityGroup(
       this,
       "SecurityGroupForDb",
       {
@@ -142,15 +135,15 @@ export class MysqlAuroraMigrationStack extends Stack {
       }
     );
 
-    dbSecurityGroup.addIngressRule(
+    this.dbSecurityGroup.addIngressRule(
       aws_ec2.Peer.securityGroupId(
-        ec2MySqlSecurityGroup.securityGroupId
+        this.ec2SecurityGrroup.securityGroupId
       ),
       aws_ec2.Port.tcp(1433)
     );
 
     // amazon rds microsoft sql
-    const rds = new aws_rds.DatabaseInstance(
+    this.rds = new aws_rds.DatabaseInstance(
       this,
       "RdsDbMigrationDemo",
       {
@@ -177,7 +170,7 @@ export class MysqlAuroraMigrationStack extends Stack {
         // for testing => production retain
         removalPolicy: RemovalPolicy.DESTROY,
         // for testing => production true
-        securityGroups: [dbSecurityGroup],
+        securityGroups: [this.dbSecurityGroup],
         storageEncrypted: false,
         // vpc subnet
         vpcSubnets: {
@@ -185,6 +178,55 @@ export class MysqlAuroraMigrationStack extends Stack {
         },
       }
     );
+  }
+}
+
+export class DmsVpcRole extends Stack {
+  public readonly role: aws_iam.Role;
+
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, props);
+
+    this.role = new aws_iam.Role(this, "DmsVpcRole", {
+      roleName: "dms-vpc-role",
+      assumedBy: new aws_iam.ServicePrincipal(
+        "dms.amazonaws.com"
+      ),
+    });
+
+    this.role.addManagedPolicy(
+      aws_iam.ManagedPolicy.fromManagedPolicyArn(
+        this,
+        "AmazonDMSVPCManagementRole",
+        "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
+      )
+    );
+
+    new CfnOutput(this, "TheDmsVpcRole", {
+      value: this.role.roleArn,
+    });
+  }
+}
+
+interface DmsMigrationStackProps extends StackProps {
+  vpcId: string;
+  vpcName: string;
+  dbStack: DatabaseStack;
+}
+
+export class DmsMigrationStack extends Stack {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: DmsMigrationStackProps
+  ) {
+    super(scope, id, props);
+
+    // get existed vpc
+    const vpc = aws_ec2.Vpc.fromLookup(this, "Vpc", {
+      vpcId: props.vpcId,
+      vpcName: props.vpcName,
+    });
 
     // dms subnet group
     const dmSubnet = new aws_dms.CfnReplicationSubnetGroup(
@@ -213,8 +255,8 @@ export class MysqlAuroraMigrationStack extends Stack {
           publiclyAccessible: false,
           resourceIdentifier: "ReplicationInstanceDemo",
           vpcSecurityGroupIds: [
-            dbSecurityGroup.securityGroupId,
-            ec2MySqlSecurityGroup.securityGroupId,
+            props.dbStack.dbSecurityGroup.securityGroupId,
+            props.dbStack.ec2SecurityGrroup.securityGroupId,
           ],
           availabilityZone: "ap-southeast-1a",
           replicationSubnetGroupIdentifier:
@@ -234,24 +276,14 @@ export class MysqlAuroraMigrationStack extends Stack {
         engineName: "sqlserver",
         // default dbname microsoft sql
         databaseName: "tempdb",
-        serverName: rds.dbInstanceEndpointAddress,
+        serverName: props.dbStack.rds.dbInstanceEndpointAddress,
         port: 1433,
         username: "admin",
         // default non
         sslMode: "none",
         // production => secret manager
         password: "Password1",
-        microsoftSqlServerSettings: {
-          // bcpPacketSize: 123,
-          // controlTablesFileGroup: "",
-          // querySingleAlwaysOnNode: false,
-          // readBackupOnly: false,
-          // safeguardPolicy: "",
-          // secretsManagerAccessRoleArn: "",
-          // secretsManagerSecretId: "",
-          // useBcpFullLoad: false,
-          // useThirdPartyBackupDevice: false
-        },
+        microsoftSqlServerSettings: {},
       }
     );
 
@@ -264,8 +296,7 @@ export class MysqlAuroraMigrationStack extends Stack {
         endpointIdentifier: "sourceEndpointId",
         engineName: "sqlserver",
         databaseName: "dms_sample",
-        serverName:
-          "ec2-13-215-254-14.ap-southeast-1.compute.amazonaws.com",
+        serverName: props.dbStack.ec2.instancePublicDnsName,
         port: 1433,
         username: "awssct",
         password: "Password1",
@@ -274,9 +305,38 @@ export class MysqlAuroraMigrationStack extends Stack {
     );
 
     // dms replication task
-    const replicationTask = new aws_dms.CfnReplicationTask(
+    const replicationAllTablesTask = new aws_dms.CfnReplicationTask(
       this,
       "DmsReplicationTaskDemo",
+      {
+        // full-load, cdc, full-load-and-cdc
+        migrationType: "full-load",
+        // replication instance ref indicates its arn
+        replicationInstanceArn: remplicationIstance.ref,
+        sourceEndpointArn: sourceEndpoint.ref,
+        tableMappings: JSON.stringify({
+          rules: [
+            {
+              "rule-type": "selection",
+              "rule-id": "200548593",
+              "rule-name": "200548593",
+              "object-locator": {
+                "schema-name": "%",
+                "table-name": "%",
+              },
+              "rule-action": "include",
+              filters: [],
+            },
+          ],
+        }),
+        targetEndpointArn: targetEndpoint.ref,
+      }
+    );
+
+    // dms replication task
+    const replicationSelectTablesTask = new aws_dms.CfnReplicationTask(
+      this,
+      "DmsReplicationTaskSelectDemo",
       {
         // full-load, cdc, full-load-and-cdc
         migrationType: "full-load",
@@ -306,33 +366,6 @@ export class MysqlAuroraMigrationStack extends Stack {
     new CfnOutput(this, "dmsSubnetGroup", {
       value:
         dmSubnet.replicationSubnetGroupIdentifier!.toString(),
-    });
-  }
-}
-
-export class DmsVpcRole extends Stack {
-  public readonly role: aws_iam.Role;
-
-  constructor(scope: Construct, id: string, props: StackProps) {
-    super(scope, id, props);
-
-    this.role = new aws_iam.Role(this, "DmsVpcRole", {
-      roleName: "dms-vpc-role",
-      assumedBy: new aws_iam.ServicePrincipal(
-        "dms.amazonaws.com"
-      ),
-    });
-
-    this.role.addManagedPolicy(
-      aws_iam.ManagedPolicy.fromManagedPolicyArn(
-        this,
-        "AmazonDMSVPCManagementRole",
-        "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
-      )
-    );
-
-    new CfnOutput(this, "TheDmsVpcRole", {
-      value: this.role.roleArn,
     });
   }
 }
