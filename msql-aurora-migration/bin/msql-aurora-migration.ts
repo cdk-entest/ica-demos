@@ -9,8 +9,8 @@ import {
 
 const app = new cdk.App();
 
-// create source and target databases 
-const dbStack =  new DatabaseStack(app, "MysqlAuroraMigrationStack", {
+// create source and target databases
+const dbStack = new DatabaseStack(app, "DatabaseStack", {
   vpcName: "MyNetworkStack/VpcWithS3Endpoint",
   vpcId: "vpc-07cafc6a819930727",
   amiImage: "ami-08c6f23674b803e33",
@@ -29,8 +29,7 @@ new DmsVpcRole(app, "DmsVpcRoleStack", {
   },
 });
 
-
-// dms migration 
+// dms migration
 new DmsMigrationStack(app, "DmsMigrationStack", {
   vpcId: "vpc-07cafc6a819930727",
   vpcName: "MyNetworkStack/VpcWithS3Endpoint",
@@ -39,4 +38,4 @@ new DmsMigrationStack(app, "DmsMigrationStack", {
     region: process.env.CDK_DEFAULT_REGION,
     account: process.env.CDK_DEFAULT_ACCOUNT,
   },
-})
+});
