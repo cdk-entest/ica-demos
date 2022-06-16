@@ -1,6 +1,6 @@
 # Transit Gateway Peering 
+This demo follows the below references: 
 
-References 
   - [AWS Example - AWS TGW Inter-Region Peering](https://github.com/aws-samples/aws-cdk-transit-gateway-peering)
   - [AWS Networking Workshop](https://networking.workshop.aws/beginner/lab1/030_tgw/_index_en.html)
 
@@ -23,8 +23,7 @@ Best practices
 
 ## Architecture 
 
-![aws_devops-Expriment drawio](https://user-images.githubusercontent.com/20411077/174018843-5714d661-7b8d-4dda-81d0-3fb3381f548c.png)
-
+![aws_devops-Expriment drawio(1)](https://user-images.githubusercontent.com/20411077/174024131-7f08741d-0c6a-4ed8-86b1-4e7b4af69002.png)
 
 ## Deploy Order 
 
