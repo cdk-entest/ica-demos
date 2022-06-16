@@ -6,9 +6,8 @@ interface VpcNetworkSackProps extends StackProps {
   asn: number;
 }
 
-export class VpcNetworkSack extends Stack {
+export class VpcNetworkSackWoTgw extends Stack {
   public readonly vpc: aws_ec2.Vpc;
-  public readonly tgw: aws_ec2.CfnTransitGateway;
 
   constructor(scope: Construct, id: string, props: VpcNetworkSackProps) {
     super(scope, id, props);
@@ -26,26 +25,6 @@ export class VpcNetworkSack extends Stack {
         },
       ],
     });
-
-    // transit gateway
-    this.tgw = new aws_ec2.CfnTransitGateway(this, "TgwDemo", {
-      // 64512 to 65534 for 16-bit ASNs. The default is 64512.
-      amazonSideAsn: props.asn,
-      autoAcceptSharedAttachments: "enable",
-      defaultRouteTableAssociation: "enable",
-      defaultRouteTablePropagation: "enable",
-    });
-
-    // tgw attachment vpc
-    const tgwAttachment = new aws_ec2.CfnTransitGatewayAttachment(
-      this,
-      "TgwAttach",
-      {
-        transitGatewayId: this.tgw.ref,
-        vpcId: this.vpc.vpcId,
-        subnetIds: this.vpc.isolatedSubnets.map((subnet) => subnet.subnetId),
-      }
-    );
 
     // vpc endpoint ssm (need 3)
     new aws_ec2.InterfaceVpcEndpoint(this, "SsmVpcEndpoint", {
@@ -69,7 +48,7 @@ export class VpcNetworkSack extends Stack {
 }
 
 interface Ec2StackProps extends StackProps {
-  vpcNetworkStack: VpcNetworkSack;
+  vpcNetworkStack: VpcNetworkSackWoTgw;
 }
 
 export class Ec2Stack extends Stack {
@@ -109,58 +88,83 @@ export class Ec2Stack extends Stack {
       securityGroup: sg,
       role: role,
     });
-
-    // nice looop default route on the subnets to tgw
-    for (var subnet of props.vpcNetworkStack.vpc.isolatedSubnets) {
-      new aws_ec2.CfnRoute(this, "Route", {
-        routeTableId: subnet.routeTable.routeTableId,
-        // vpc cidr here
-        destinationCidrBlock: "0.0.0.0/0",
-        transitGatewayId: props.vpcNetworkStack.tgw.ref,
-      });
-    }
   }
 }
 
-interface TgwPeeringProps extends StackProps {
-  transitGatewayId: string;
-  peerTransitGatewayId: string;
-  peerRegion: string;
-  peerAccountId: string;
+interface TgwCentralRouterProps extends StackProps {
+  vpcTestDepartment: aws_ec2.Vpc;
+  vpcDevDepartment: aws_ec2.Vpc;
 }
 
-export class TgwPeering extends Stack {
-  constructor(scope: Construct, id: string, props: TgwPeeringProps) {
+export class TgwCentralRouter extends Stack {
+  constructor(scope: Construct, id: string, props: TgwCentralRouterProps) {
     super(scope, id, props);
 
-    new aws_ec2.CfnTransitGatewayPeeringAttachment(
+    // transigt gateway
+    const tgw = new aws_ec2.CfnTransitGateway(
       this,
-      "TransitGatewayPeeringAttachmentDemo",
+      "TransitGatewayCentralRouter",
       {
-        transitGatewayId: props.transitGatewayId,
-        peerTransitGatewayId: props.peerTransitGatewayId,
-        peerRegion: props.peerRegion,
-        peerAccountId: props.peerAccountId,
+        // 64512 to 65534 for 16-bit ASNs. The default is 64512.
+        amazonSideAsn: 64512,
+        autoAcceptSharedAttachments: "enable",
+        defaultRouteTableAssociation: "enable",
+        defaultRouteTablePropagation: "enable",
       }
     );
-  }
-}
 
-interface TgwRouteTableProps extends StackProps {
-  routeTableId: string;
-  attachmentId: string;
-  destCidr: string;
-}
+    // tgw attachment vpc test department
+    const vpcTestTgwAttach = new aws_ec2.CfnTransitGatewayAttachment(
+      this,
+      "TgwAttachmentVpcTestDepartment",
+      {
+        transitGatewayId: tgw.ref,
+        vpcId: props.vpcTestDepartment.vpcId,
+        subnetIds: props.vpcTestDepartment.isolatedSubnets.map(
+          (subnet) => subnet.subnetId
+        ),
+      }
+    );
 
-export class TgwRouteTable extends Stack {
-  constructor(scope: Construct, id: string, props: TgwRouteTableProps) {
-    super(scope, id, props);
+    vpcTestTgwAttach.addDependsOn(tgw);
 
-    new aws_ec2.CfnTransitGatewayRoute(this, `TgwRoutTable-${this.region}`, {
-      transitGatewayRouteTableId: props.routeTableId,
-      blackhole: false,
-      destinationCidrBlock: props.destCidr,
-      transitGatewayAttachmentId: props.attachmentId,
-    });
+    // tgw attachment vpc dev department
+    const vpcDevTgwAttach = new aws_ec2.CfnTransitGatewayAttachment(
+      this,
+      "TgwAttachmentVpcDevDepartment",
+      {
+        transitGatewayId: tgw.ref,
+        vpcId: props.vpcDevDepartment.vpcId,
+        subnetIds: props.vpcDevDepartment.isolatedSubnets.map(
+          (subnet) => subnet.subnetId
+        ),
+      }
+    );
+
+    vpcDevTgwAttach.addDependsOn(tgw);
+
+    // update routes in vpc test department
+    for (var subnet of props.vpcTestDepartment.isolatedSubnets) {
+      var route = new aws_ec2.CfnRoute(this, "RouteToDevVpcDepartment", {
+        routeTableId: subnet.routeTable.routeTableId,
+        // vpc cidr here
+        destinationCidrBlock: props.vpcDevDepartment.vpcCidrBlock,
+        transitGatewayId: tgw.ref,
+      });
+      // route.addDependsOn(vpcDevTgwAttach);
+      route.addDependsOn(vpcTestTgwAttach);
+    }
+
+    // update routes in vpc test department
+    for (var subnet of props.vpcDevDepartment.isolatedSubnets) {
+      var route = new aws_ec2.CfnRoute(this, "RouteToTestVpcDepartment", {
+        routeTableId: subnet.routeTable.routeTableId,
+        // vpc cidr here
+        destinationCidrBlock: props.vpcTestDepartment.vpcCidrBlock,
+        transitGatewayId: tgw.ref,
+      });
+      route.addDependsOn(vpcDevTgwAttach);
+      // route.addDependsOn(vpcTestTgwAttach);
+    }
   }
 }
