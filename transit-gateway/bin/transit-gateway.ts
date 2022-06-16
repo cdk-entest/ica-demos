@@ -10,20 +10,25 @@ import {
 
 const app = new cdk.App();
 
+// ====================== STEP 2: NETWORK & EC2 ==================
 // cidr for vpc in us-east-1
 const US_EAST_1_CIDR = "172.16.0.0/24"; 
 // cidr for vpc in us-west-1
 const US_WEST_1_CIDR = "172.16.1.0/24";
 // peer tgw id - us-west-1 tgw 
-const PeerTransitGatewayId = ""
+const PeerTransitGatewayId = "tgw-0ef15ea87e6086941"
+
+// ====================== STEP 2: TGW PEER ======================
 // tgw route table id - us-east-1
-const RouteTableIdUsEast1 = ""
+const RouteTableIdUsEast1 = "tgw-rtb-00d678638374ed0d8"
 // tgw rout table id - us-west-1
-const RouteTableIdWest1 = ""
-// tgw attachment id - us-east-1
-const TgwAttachmentIdUsEast1 = ""
-// tgw attachment id - us-west-1
-const TgwAttachmentIdUsWest1 = ""
+const RouteTableIdWest1 = "tgw-rtb-0a830b0b8f65619ea"
+
+// ====================== STEP 3: TGW PEER ======================
+// tgw-peer attachment id - us-east-1
+const TgwAttachmentIdUsEast1 = "tgw-attach-08cfff38699320f0a"
+// tgw-peer attachment id - us-west-1
+const TgwAttachmentIdUsWest1 = "tgw-attach-08cfff38699320f0a"
 
 
 // network stack us-east-1
