@@ -17,7 +17,7 @@
 
 - step 5. update tgw route table 
 
-## Entire Netork Stack 
+## Entire Network Stack 
 vpc in us-east-1 including a tgw
 ```tsx 
 const networkStackUsEast1 = new VpcNetworkSack(app, "VpcNetworkSackUsEast1", {
