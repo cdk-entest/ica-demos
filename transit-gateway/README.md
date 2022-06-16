@@ -3,6 +3,20 @@
 
 ## Architecture 
 
+## Deploy Order 
+
+- step 1. deploy network stacks in us-east-1 and us-west-1, take note 
+  - RouteTableIdUsEast1, TgwAttachmentIdUsEast1
+  - RouteTableIdWest1, TgwAttachmentIdUsWest1
+
+- step 2. deploy ec2 stacks in us-east-2 and us-west-2
+
+- step 3. deploy tgw peering from us-east-1 to us-west-1 (acceptor)
+
+- step 4. manuall approval 
+
+- step 5. update tgw route table 
+
 ## Entire Netork Stack 
 vpc in us-east-1 including a tgw
 ```tsx 
@@ -93,16 +107,6 @@ export class TgwRouteTable extends Stack {
     )
   }
 ```
-
-## Deploy Order 
-step 1. deploy network stacks in us-east-1 and us-west-1, take note 
-  - RouteTableIdUsEast1, TgwAttachmentIdUsEast1
-  - RouteTableIdWest1, TgwAttachmentIdUsWest1
-step 2. deploy ec2 stacks in us-east-2 and us-west-2
-step 3. deploy tgw peering from us-east-1 to us-west-1 (acceptor)
-step 4. manuall approval 
-step 5. update tgw route table 
-
 
 ## Network Stack Per Region 
 create a vpc with one private-isolated subnet 
