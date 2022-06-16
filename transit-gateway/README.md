@@ -3,6 +3,9 @@
 
 ## Architecture 
 
+![aws_devops-Expriment drawio](https://user-images.githubusercontent.com/20411077/174018843-5714d661-7b8d-4dda-81d0-3fb3381f548c.png)
+
+
 ## Deploy Order 
 
 - step 1. deploy network stacks in us-east-1 and us-west-1, take note 
