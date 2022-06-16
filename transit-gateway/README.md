@@ -18,7 +18,7 @@ When to use/use cases?
 Best practices 
 - [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html#bandwidth-quotas): 5000 attachments, 50Gbps per VPC attachment, and ...
 - [Direct connection location](https://aws.amazon.com/directconnect/locations/)
-- [docs aws](https://docs.aws.amazon.com/)
+- [docs aws](https://docs.aws.amazon.com/) **RECOMMENDED**
 - [TGW FAQ](https://aws.amazon.com/transit-gateway/faqs/)
 
 ## Architecture 
