@@ -216,24 +216,3 @@ for (var subnet of props.vpcNetworkStack.vpc.isolatedSubnets) {
   });
 ```
 
-## Transit Gatway Peering Attachment
-```tsx
-export class VpcPeerConnection extends Stack {
-  constructor(scope: Construct, id: string, props: VpcPeerConnectionProps) {
-    super(scope, id, props);
-
-    new aws_ec2.CfnTransitGatewayPeeringAttachment(
-      this,
-      "TransitGatewayPeeringAttachmentDemo",
-      {
-        transitGatewayId: props.transitGatewayId,
-        peerTransitGatewayId: props.transitGatewayId,
-        peerRegion: props.peerRegion,
-        peerAccountId: props.peerAccountId
-      }
-    )
-  }
-}
-```
-
-
