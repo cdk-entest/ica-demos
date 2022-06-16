@@ -4,7 +4,7 @@
 ## Architecture 
 
 ## Entire Netork Stack 
-vpc in us-east-1
+vpc in us-east-1 including a tgw
 ```tsx 
 const networkStackUsEast1 = new VpcNetworkSack(app, "VpcNetworkSackUsEast1", {
   asn: 64512,
@@ -15,7 +15,7 @@ const networkStackUsEast1 = new VpcNetworkSack(app, "VpcNetworkSackUsEast1", {
   },
 });
 ```
-vpc in us-west-1
+vpc in us-west-1 including a tgw
 ```tsx 
 const networkStackUsWest1 = new VpcNetworkSack(app, "VpcNetworkStackUsWest1", {
   asn: 64513,
@@ -26,7 +26,7 @@ const networkStackUsWest1 = new VpcNetworkSack(app, "VpcNetworkStackUsWest1", {
   },
 });
 ```
-ec2 in us-east-1
+ec2 in us-east-1 for ping 
 ```tsx
 const ec2UsEast1 = new Ec2Stack(app, "Ec2StackUsEast1", {
   vpcNetworkStack: networkStackUsEast1,
@@ -38,7 +38,7 @@ const ec2UsEast1 = new Ec2Stack(app, "Ec2StackUsEast1", {
 
 ec2UsEast1.addDependency(networkStackUsEast1);
 ```
-ec2 in us-west-1
+ec2 in us-west-1 for ping 
 ```tsx
 const ec2UsWest1 = new Ec2Stack(app, "Ec2StackUsWest1", {
   vpcNetworkStack: networkStackUsWest1,
@@ -52,16 +52,22 @@ ec2UsWest1.addDependency(networkStackUsWest1);
 ```
 tgw peering attachment 
 ```tsx
-const peer = new VpcPeerConnection(app, "TransitGatewayPeering", {
-  transitGatewayId: networkStackUsEast1.tgw.ref,
-  peerTransitGatewayId: "tgw-03119c6197818d92e",
-  peerRegion: "us-west-1",
-  peerAccountId: process.env.CDK_DEFAULT_ACCOUNT!.toString(),
-  env: {
-    region: "us-east-1",
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
-});
+export class TgwPeering extends Stack {
+  constructor(scope: Construct, id: string, props: TgwPeeringProps) {
+    super(scope, id, props);
+
+    new aws_ec2.CfnTransitGatewayPeeringAttachment(
+      this,
+      "TransitGatewayPeeringAttachmentDemo",
+      {
+        transitGatewayId: props.transitGatewayId,
+        peerTransitGatewayId: props.transitGatewayId,
+        peerRegion: props.peerRegion,
+        peerAccountId: props.peerAccountId,
+      }
+    );
+  }
+}
 ```
 
 tgw peering acceptance 
@@ -71,8 +77,32 @@ manually accept by clicking mouse
 
 tgw routes update
 ```tsx
+export class TgwRouteTable extends Stack {
+  constructor(scope: Construct, id: string, props: TgwRouteTableProps) {
+    super(scope, id, props);
 
+    new aws_ec2.CfnTransitGatewayRoute(
+      this,
+      `TgwRoutTable-${this.region}`,
+      {
+        transitGatewayRouteTableId: props.routeTableId,
+        blackhole: false,
+        destinationCidrBlock: props.destCidr,
+        transitGatewayAttachmentId: props.attachmentId
+      }
+    )
+  }
 ```
+
+## Deploy Order 
+step 1. deploy network stacks in us-east-1 and us-west-1, take note 
+  - RouteTableIdUsEast1, TgwAttachmentIdUsEast1
+  - RouteTableIdWest1, TgwAttachmentIdUsWest1
+step 2. deploy ec2 stacks in us-east-2 and us-west-2
+step 3. deploy tgw peering from us-east-1 to us-west-1 (acceptor)
+step 4. manuall approval 
+step 5. update tgw route table 
+
 
 ## Network Stack Per Region 
 create a vpc with one private-isolated subnet 

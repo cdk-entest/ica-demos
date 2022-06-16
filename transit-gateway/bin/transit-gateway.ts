@@ -4,15 +4,32 @@ import * as cdk from "aws-cdk-lib";
 import {
   Ec2Stack,
   VpcNetworkSack,
-  VpcPeerConnection,
+  TgwPeering,
+  TgwRouteTable,
 } from "../lib/transit-gateway-stack";
 
 const app = new cdk.App();
 
+// cidr for vpc in us-east-1
+const US_EAST_1_CIDR = "172.16.0.0/24"; 
+// cidr for vpc in us-west-1
+const US_WEST_1_CIDR = "172.16.1.0/24";
+// peer tgw id - us-west-1 tgw 
+const PeerTransitGatewayId = ""
+// tgw route table id - us-east-1
+const RouteTableIdUsEast1 = ""
+// tgw rout table id - us-west-1
+const RouteTableIdWest1 = ""
+// tgw attachment id - us-east-1
+const TgwAttachmentIdUsEast1 = ""
+// tgw attachment id - us-west-1
+const TgwAttachmentIdUsWest1 = ""
+
+
 // network stack us-east-1
 const networkStackUsEast1 = new VpcNetworkSack(app, "VpcNetworkSackUsEast1", {
   asn: 64512,
-  cidr: "172.16.0.0/24",
+  cidr: US_EAST_1_CIDR,
   env: {
     region: "us-east-1",
     account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -22,7 +39,7 @@ const networkStackUsEast1 = new VpcNetworkSack(app, "VpcNetworkSackUsEast1", {
 // network us-west-1
 const networkStackUsWest1 = new VpcNetworkSack(app, "VpcNetworkStackUsWest1", {
   asn: 64513,
-  cidr: "172.16.1.0/24",
+  cidr: US_WEST_1_CIDR,
   env: {
     region: "us-west-1",
     account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -51,10 +68,10 @@ const ec2UsWest1 = new Ec2Stack(app, "Ec2StackUsWest1", {
 
 ec2UsWest1.addDependency(networkStackUsWest1);
 
-// twg peering attachment here
-const peer = new VpcPeerConnection(app, "TransitGatewayPeering", {
+// tgw peering attachment: us-east-1 to us-west-1 (acceptor)
+const peer = new TgwPeering(app, "TransitGatewayPeering", {
   transitGatewayId: networkStackUsEast1.tgw.ref,
-  peerTransitGatewayId: "tgw-03119c6197818d92e",
+  peerTransitGatewayId: PeerTransitGatewayId,
   peerRegion: "us-west-1",
   peerAccountId: process.env.CDK_DEFAULT_ACCOUNT!.toString(),
   env: {
@@ -62,3 +79,36 @@ const peer = new VpcPeerConnection(app, "TransitGatewayPeering", {
     account: process.env.CDK_DEFAULT_ACCOUNT,
   },
 });
+
+
+// acceptance manually 
+
+// us-east-1 update tgw routes 
+new TgwRouteTable(
+  app, 
+  "TgwRouteTableUsEast1",
+  {
+    routeTableId: RouteTableIdUsEast1,
+    attachmentId: TgwAttachmentIdUsEast1,
+    destCidr: US_WEST_1_CIDR,
+    env: {
+      region: "us-east-1",
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    }
+  }
+)
+
+// us-west-1 update tgw routes 
+new TgwRouteTable(
+  app, 
+  "TgwRouteTableUsWest1",
+  {
+    routeTableId: RouteTableIdWest1,
+    attachmentId: TgwAttachmentIdUsWest1,
+    destCidr: US_EAST_1_CIDR,
+    env: {
+      region: "us-west-1",
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    }
+  }
+)

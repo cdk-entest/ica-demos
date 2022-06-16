@@ -121,15 +121,15 @@ export class Ec2Stack extends Stack {
   }
 }
 
-interface VpcPeerConnectionProps extends StackProps {
+interface TgwPeeringProps extends StackProps {
   transitGatewayId: string;
-  peerTransitGatewayId: string; 
-  peerRegion: string; 
-  peerAccountId: string; 
+  peerTransitGatewayId: string;
+  peerRegion: string;
+  peerAccountId: string;
 }
 
-export class VpcPeerConnection extends Stack {
-  constructor(scope: Construct, id: string, props: VpcPeerConnectionProps) {
+export class TgwPeering extends Stack {
+  constructor(scope: Construct, id: string, props: TgwPeeringProps) {
     super(scope, id, props);
 
     new aws_ec2.CfnTransitGatewayPeeringAttachment(
@@ -139,8 +139,32 @@ export class VpcPeerConnection extends Stack {
         transitGatewayId: props.transitGatewayId,
         peerTransitGatewayId: props.transitGatewayId,
         peerRegion: props.peerRegion,
-        peerAccountId: props.peerAccountId
+        peerAccountId: props.peerAccountId,
+      }
+    );
+  }
+}
+
+interface TgwRouteTableProps extends StackProps {
+  routeTableId: string; 
+  attachmentId: string; 
+  destCidr: string; 
+}
+
+export class TgwRouteTable extends Stack {
+  constructor(scope: Construct, id: string, props: TgwRouteTableProps) {
+    super(scope, id, props);
+
+    new aws_ec2.CfnTransitGatewayRoute(
+      this,
+      `TgwRoutTable-${this.region}`,
+      {
+        transitGatewayRouteTableId: props.routeTableId,
+        blackhole: false,
+        destinationCidrBlock: props.destCidr,
+        transitGatewayAttachmentId: props.attachmentId
       }
     )
+
   }
 }
