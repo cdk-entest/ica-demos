@@ -47,7 +47,7 @@ const ec2MySqlSecurityGroup = new aws_ec2.SecurityGroup(
 ec2MySqlSecurityGroup.addIngressRule(
   // RDP access
   aws_ec2.Peer.anyIpv4(),
-  aws_ec2.Port.tcp(1521)
+  aws_ec2.Port.tcp(3389)
 );
 
 ec2MySqlSecurityGroup.addIngressRule(
@@ -288,7 +288,7 @@ this,
         "rule-name": "200548593",
         "object-locator": {
           "schema-name": "%",
-          "table-name": "%",
+          "table-name": "player",
         },
         "rule-action": "include",
         filters: [],
@@ -332,3 +332,19 @@ export class DmsVpcRole extends Stack {
 
 ## SqlServerEngineVersion
 Need to go to aws console to double check which version is supportd. The auto suggested list from CDK does not work. 
+
+## SQL Basic Queries 
+```sql
+SELECT COUNT(*) 
+  FROM [dms_sample].[dbo].[person]
+```
+```sql
+SELECT  TOP (1000) * FROM [dms_sample].[dbo].[player]
+```
+```sql
+SELECT TOP (1000) [ID]
+      ,[full_name]
+      ,[last_name]
+      ,[first_name]
+  FROM [dms_sample].[dbo].[person]
+```
