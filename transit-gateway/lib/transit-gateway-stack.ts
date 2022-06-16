@@ -137,7 +137,7 @@ export class TgwPeering extends Stack {
       "TransitGatewayPeeringAttachmentDemo",
       {
         transitGatewayId: props.transitGatewayId,
-        peerTransitGatewayId: props.transitGatewayId,
+        peerTransitGatewayId: props.peerTransitGatewayId,
         peerRegion: props.peerRegion,
         peerAccountId: props.peerAccountId,
       }
@@ -165,6 +165,5 @@ export class TgwRouteTable extends Stack {
         transitGatewayAttachmentId: props.attachmentId
       }
     )
-
   }
 }
