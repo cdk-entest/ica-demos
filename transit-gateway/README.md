@@ -1,5 +1,22 @@
 # Transit Gateway Peering 
 
+References 
+  - [AWS Example - AWS TGW Inter-Region Peering](https://github.com/aws-samples/aws-cdk-transit-gateway-peering)
+  - [AWS Networking Workshop](https://networking.workshop.aws/beginner/lab1/030_tgw/_index_en.html)
+
+
+Customers  
+- [TREND MICRO](https://aws.amazon.com/transit-gateway/customers/)
+
+When to use/use cases? 
+- [A central hub which connects many VPCs](https://aws.amazon.com/transit-gateway/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc)
+- [Inter-region peering](https://aws.amazon.com/transit-gateway/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc)
+- VPN - Customer Gateway 
+- [Direct Connect - Direct Connect GW - TGW](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway.html) Transit VIF 
+- [Direct Connect - TGW](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway-vpn.html) Public VIF (VPN)
+
+Best practices 
+- [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html#bandwidth-quotas): 5000 attachments, 50Gbps per VPC attachment, and ...
 
 ## Architecture 
 
