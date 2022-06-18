@@ -4,7 +4,7 @@ import { SimulatedOnPremFromWorkShop } from "../lib/simulated-on-prem";
 import { Gateway, TgwRouteAttachment } from "../lib/transit-gateway-routes";
 import * as config from "../params.json";
 
-const cfnParams: Record<string, Record<string, any>> = config;
+const cfnParams: Record<string, any> = config;
 
 // region to deploy
 const REGION = "us-east-1";
@@ -12,7 +12,7 @@ const REGION = "us-east-1";
 // create an app
 const app = new App();
 
-// simulated on-prem network
+// option. simulated on-prem network
 const simulatedOnPrem = new SimulatedOnPremFromWorkShop(
   app,
   "SimulatedOnPremFromWorkShop",
@@ -23,7 +23,7 @@ const simulatedOnPrem = new SimulatedOnPremFromWorkShop(
   }
 );
 
-// aws based network
+// step 1. aws based network
 const baseNetwork = new BaseNetworkStack(app, "AwsBaseNetwork", {
   env: {
     region: REGION,
@@ -31,18 +31,18 @@ const baseNetwork = new BaseNetworkStack(app, "AwsBaseNetwork", {
   description: "Builds the base resources for the TGW",
 });
 
-// tgw, cgw, vpn-connection
+// step 2. tgw, cgw, vpn-connection
 const gateway = new Gateway(app, "TgwAndVpnAndCgw", {
   prefix: "TGW-",
   amazonSideAsn: cfnParams[REGION].AmazonSideAsn,
-  onPremIpAddress: "54.210.184.138",
+  onPremIpAddress: cfnParams["OnPremPublicIp"],
   customerSideAsn: cfnParams[REGION].CustomerSideAsn,
   env: {
     region: REGION,
   },
 });
 
-// tgw route table, tgw-attachments, vpc-subnet-routing
+// step 3. tgw route table, tgw-attachments, vpc-subnet-routing
 new TgwRouteAttachment(app, "TgwRouteAttachment", {
   prefix: "TGW-",
   transitGateway: gateway.cfnTransitGateway,

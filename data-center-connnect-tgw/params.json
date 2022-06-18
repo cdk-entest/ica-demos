@@ -28,5 +28,6 @@
     "CustomerSideAsn": 65502,
     "PeerDevelopmentCidr": "10.1.0.0/16",
     "PeerProductionCidr": "10.2.0.0/16"
-  }
+  },
+  "OnPremPublicIp": "54.210.184.138"
 }

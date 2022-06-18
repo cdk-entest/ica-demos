@@ -2,7 +2,7 @@ import { aws_ec2, aws_iam, CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as config from "./../params.json";
 
-const cfnParams: Record<string, Record<string, any>> = config;
+const cfnParams: Record<string, any> = config;
 
 // ========================== vpc with ec2 ==========================
 export interface VpcWithEc2Props {
