@@ -2,6 +2,9 @@
 
 ## Architecture 
 
+![aws_devops-Expriment drawio (1)](https://user-images.githubusercontent.com/20411077/174434954-d3d3084e-3061-48cb-8786-65a727689acd.png)
+
+
 ## Simulated On-Premise 
 
 ## AWS Base Network Stack 
@@ -362,3 +365,7 @@ const ec2 = new aws_ec2.Instance(
 ec2.node.addDependency(this.vpc);
 ```
 
+<<<<<<< HEAD
+=======
+## 
+>>>>>>> 8688f2c85e2d3d2bd1062c71ed0263cf48758b01
