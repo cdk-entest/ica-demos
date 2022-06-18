@@ -22,6 +22,11 @@ cdk deploy TgwRouteAttachment
 
 - Step 4. (Option). Configure On-Premises OpenSwan
 
+take note public ip
+```
+cdk deploy SimulatedOnPremFromWorkShop
+```
+
 ## AWS Base Network Stack 
 vpc for development department 
 ```tsx
