@@ -4,8 +4,23 @@
 
 ![aws_devops-Expriment drawio (1)](https://user-images.githubusercontent.com/20411077/174434954-d3d3084e-3061-48cb-8786-65a727689acd.png)
 
+## Deploy Order 
+- Step 1. Aws Base Network 
+```bash 
+cdk deploy AwsBaseNetwork
+```
 
-## Simulated On-Premise 
+- Step 2. Transit Gateway, Customer Gateway, VPN Connection
+```
+cdk deploy TgwAndVpnAndCgw
+```
+
+- Step 3. Update TGW Routes, VPC Subnet Routes
+```bash
+cdk deploy TgwRouteAttachment
+```
+
+- Step 4. (Option). Configure On-Premises OpenSwan
 
 ## AWS Base Network Stack 
 vpc for development department 
@@ -29,7 +44,7 @@ vpc for production department
     });
 ```
 
-## Option. Simulated On-Prem 
+simulated on-premise [AWS NETWORK WORKSHOP](https://networking.workshop.aws/beginner/lab2/010_builddc.html)
 ```tsx
 export class SimulatedOnPremFromWorkShop extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
@@ -364,8 +379,3 @@ const ec2 = new aws_ec2.Instance(
 );
 ec2.node.addDependency(this.vpc);
 ```
-
-<<<<<<< HEAD
-=======
-## 
->>>>>>> 8688f2c85e2d3d2bd1062c71ed0263cf48758b01
