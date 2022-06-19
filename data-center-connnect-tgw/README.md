@@ -1,8 +1,35 @@
 # Transit Gateway with A Simulated On-Premises Data Center 
 
+
 ## Architecture 
 
 ![aws_devops-Expriment drawio (1)](https://user-images.githubusercontent.com/20411077/174434954-d3d3084e-3061-48cb-8786-65a727689acd.png)
+
+
+
+Customers  
+- [TREND MICRO](https://aws.amazon.com/transit-gateway/customers/)
+
+When to use/use cases? 
+- [A central hub which connects many VPCs](https://aws.amazon.com/transit-gateway/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc)
+- [Inter-region peering](https://aws.amazon.com/transit-gateway/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc)
+- VPN - Customer Gateway 
+- [Direct Connect - Direct Connect GW - TGW](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway.html) Transit VIF 
+- [Direct Connect - TGW](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway-vpn.html) Public VIF (VPN)
+
+Best practices 
+- [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html#bandwidth-quotas): 5000 attachments, 50Gbps per VPC attachment, and ...
+- [Direct connection location](https://aws.amazon.com/directconnect/locations/)
+- [docs aws](https://docs.aws.amazon.com/) **RECOMMENDED**
+- [TGW FAQ](https://aws.amazon.com/transit-gateway/faqs/)
+
+Essential Concepts
+- [TGW attachment, association, propogation, route table](https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html)
+- [TGW VPC attachment](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-vpc-attachments.html)
+- [TGW VPN attachment](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-vpn-attachments.html)
+- [TGW peering attachment](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-peering-scenario.html)
+- [BGP](https://www.cloudflare.com/learning/security/glossary/what-is-bgp/)
+- [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html)
 
 
 ## Deploy Order 
