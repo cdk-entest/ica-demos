@@ -1,6 +1,6 @@
 import { App } from "aws-cdk-lib";
 import { BaseNetworkStack } from "../lib/base-network-stack";
-import { SimulatedOnPremFromWorkShop } from "../lib/simulated-on-prem";
+import { SimulatedOnPrem } from "../lib/simulated-on-prem";
 import { Gateway, TgwRouteAttachment } from "../lib/transit-gateway-routes";
 import * as config from "../params.json";
 
@@ -11,17 +11,6 @@ const REGION = "us-east-1";
 
 // create an app
 const app = new App();
-
-// option. simulated on-prem network
-const simulatedOnPrem = new SimulatedOnPremFromWorkShop(
-  app,
-  "SimulatedOnPremFromWorkShop",
-  {
-    env: {
-      region: REGION,
-    },
-  }
-);
 
 // step 1. aws based network
 const baseNetwork = new BaseNetworkStack(app, "AwsBaseNetwork", {
@@ -44,10 +33,20 @@ const gateway = new Gateway(app, "TgwAndVpnAndCgw", {
 
 // step 3. tgw route table, tgw-attachments, vpc-subnet-routing
 new TgwRouteAttachment(app, "TgwRouteAttachment", {
-  prefix: "TGW-",
+  prefix: "Gateway-",
   transitGateway: gateway.cfnTransitGateway,
   developmentVpc: baseNetwork.developmentVpc.vpc,
   productionVpc: baseNetwork.productionVpc.vpc,
+  env: {
+    region: REGION,
+  },
+});
+
+// step 4. simulated on-prem network
+new SimulatedOnPrem(app, "SimulatedOnPrem", {
+  prefix: "OnPrem-",
+  cidr: cfnParams[REGION].OnPremCidr,
+  cidrMask: cfnParams[REGION].CidrMask,
   env: {
     region: REGION,
   },

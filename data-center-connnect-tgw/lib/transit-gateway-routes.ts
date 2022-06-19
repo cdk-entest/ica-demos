@@ -257,3 +257,73 @@ export class TgwRouteAttachment extends Stack {
     }
   }
 }
+
+interface TgwVpnRoutingProps extends StackProps {
+  transitGateway: aws_ec2.CfnTransitGateway;
+  vpcRouteTableId: string;
+  devAttachmentId: string;
+  prodAttachmentId: string;
+  vpnAttachmentId: string;
+}
+
+export class TgwVpnRouting extends Stack {
+  constructor(scope: Construct, id: string, props: TgwVpnRoutingProps) {
+    super(scope, id, props);
+
+    // create the routing table association and propogation for TGW-VPN
+    const vpnTransitGatewayRTB = new aws_ec2.CfnTransitGatewayRouteTable(
+      this,
+      "VPN",
+      {
+        transitGatewayId: props.transitGateway.ref,
+        tags: [
+          {
+            key: "Name",
+            value: "VPNRouteTable",
+          },
+        ],
+      }
+    );
+
+    // tgw vpn association
+    new aws_ec2.CfnTransitGatewayRouteTableAssociation(this, "VPNAssociation", {
+      transitGatewayAttachmentId: props.vpnAttachmentId,
+      transitGatewayRouteTableId: vpnTransitGatewayRTB.ref,
+    });
+
+    // tgw vpn propogation
+    new aws_ec2.CfnTransitGatewayRouteTablePropagation(this, "VPNPropogation", {
+      transitGatewayAttachmentId: props.vpnAttachmentId,
+      transitGatewayRouteTableId: vpnTransitGatewayRTB.ref,
+    });
+
+    // propogate the vpn attachment for dev and prod TGW-VPC Routable
+    new aws_ec2.CfnTransitGatewayRouteTablePropagation(
+      this,
+      "DevelopmentVPNPropagation",
+      {
+        transitGatewayAttachmentId: props.vpnAttachmentId,
+        transitGatewayRouteTableId: props.vpcRouteTableId,
+      }
+    );
+
+    // propogate dev and prod attachment with TGW-VPN RoutTable
+    new aws_ec2.CfnTransitGatewayRouteTablePropagation(
+      this,
+      "VPNDevelopmentPropogation",
+      {
+        transitGatewayAttachmentId: props.devAttachmentId,
+        transitGatewayRouteTableId: vpnTransitGatewayRTB.ref,
+      }
+    );
+
+    new aws_ec2.CfnTransitGatewayRouteTablePropagation(
+      this,
+      "VPNProductionPropogation",
+      {
+        transitGatewayAttachmentId: props.prodAttachmentId,
+        transitGatewayRouteTableId: vpnTransitGatewayRTB.ref,
+      }
+    );
+  }
+}

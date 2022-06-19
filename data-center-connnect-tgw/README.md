@@ -4,30 +4,88 @@
 
 ![aws_devops-Expriment drawio (1)](https://user-images.githubusercontent.com/20411077/174434954-d3d3084e-3061-48cb-8786-65a727689acd.png)
 
+
 ## Deploy Order 
-- Step 1. Aws Base Network 
+#### Step 1. Crean an AWS base network 
 ```bash 
 cdk deploy AwsBaseNetwork
 ```
+#### Step 2. Create a simulated on-prem [HERE](https://aws.amazon.com/blogs/networking-and-content-delivery/simulating-site-to-site-vpn-customer-gateways-strongswan/)
+```
+cdk deploy SimulatedOnPrem
+```
+```bash
+take note the EIP for step 3 (customer gateway)
+```
 
-- Step 2. Transit Gateway, Customer Gateway, VPN Connection
+#### Step 3. Transit Gateway, Customer Gateway, VPN Connection
 ```
 cdk deploy TgwAndVpnAndCgw
 ```
+Download the configuration (generic) from AWS VPN Site-to-Site. Take note params for step 4. 
 
-- Step 3. Update TGW Routes, VPC Subnet Routes
+**template-parameters-psk-auth.json** 
+```json 
+{
+    "ParameterKey": "pAuthType",
+    "ParameterValue": "psk"
+  },
+  {
+    "ParameterKey": "pTunnel1PskSecretName",
+    "ParameterValue": "pTunnel1PskSecretName"
+  },
+  {
+    "ParameterKey": "pTunnel1VgwOutsideIpAddress",
+    "ParameterValue": "34.227.182.74"
+  },
+  {
+    "ParameterKey": "pTunnel1CgwInsideIpAddress",
+    "ParameterValue": "169.254.86.242/30"
+  },
+  {
+    "ParameterKey": "pTunnel1VgwInsideIpAddress",
+    "ParameterValue": "169.254.86.241/30"
+  },
+  {
+    "ParameterKey": "pTunnel1VgwBgpAsn",
+    "ParameterValue": "65001"
+  },
+  {
+    "ParameterKey": "pTunnel1BgpNeighborIpAddress",
+    "ParameterValue": "169.254.86.241"
+  },
+```
+
+```bash
+create 2 secrete keys for psk
+```
+
+#### Step 4. Deploy the Simulated On-Prem with StrongSwan 
+
+```bash 
+./manage-stack -s vpn-gateway-1 --region us-east-1 template-parameters-psk-auth.json
+```
+
+
+#### Step 5. Update TGW Routes, VPC Subnet Routes
+
+Option 1. By code 
 ```bash
 cdk deploy TgwRouteAttachment
 ```
 
-- Step 4. (Option). Configure On-Premises OpenSwan
-
-take note public ip
+Option 2. By hands 
+```bash 
+create TGW attachment for VPC, VPN
 ```
-cdk deploy SimulatedOnPremFromWorkShop
+```bash 
+check the default TGW route table 
+```
+```bash 
+update subnet route tables for VPCs 
 ```
 
-## AWS Base Network Stack 
+## Step 1-2. AWS Base Network Stack 
 vpc for development department 
 ```tsx
  // vpc-ec2 for dev development
@@ -49,20 +107,20 @@ vpc for production department
     });
 ```
 
-simulated on-premise [AWS NETWORK WORKSHOP](https://networking.workshop.aws/beginner/lab2/010_builddc.html)
+simulated on-premise (place-holder)
 ```tsx
-export class SimulatedOnPremFromWorkShop extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps) {
-    super(scope, id, props);
-
-    new cloudformation_include.CfnInclude(this, "SimulatedOnPrem", {
-      templateFile: "./lib/simulated-on-prem.yaml",
-    });
-  }
-}
+// simulated on-premise place-holder
+new SimulatedOnPrem(app, "SimulatedOnPrem", {
+  prefix: "OnPrem-",
+  cidr: cfnParams[REGION].OnPremCidr,
+  cidrMask: cfnParams[REGION].CidrMask,
+  env: {
+    region: REGION,
+  },
+});
 ```
 
-## Transit Gateway, Customer Gateway, VPN Connection 
+## Step 3. Transit Gateway, Customer Gateway, VPN Connection 
 create a TGW 
 ```tsx 
 // create an TGW
@@ -127,7 +185,23 @@ create a vpn connection
     );
 ```
 
-## Transit Gateway Routes, Attachments 
+## Step 4. Deploy the Simulated On-Prem with StrongSwan 
+```bash
+create 2 secret keys for psk 
+```
+```bash
+update template-parameters-psk-auth.json
+```
+run 
+```bash
+./manage-stack -s vpn-gateway-1 --region us-east-1 template-parameters-psk-auth.json
+```
+wait and check both tunnel UP
+```bash 
+sudo strongswan status
+```
+
+## Step 5. Transit Gateway Routes, Attachments 
 create a tgw route table
 ```tsx
 // tgw route table
@@ -237,7 +311,7 @@ prod-vpc-attachment tgw-propogation
     );
 ```
 
-### VPC Subnet Routes Update 
+### Step 5. VPC Subnet Routes Update 
 development vpc subnets route update
 ```tsx
 // development vpc subnets route update
@@ -266,121 +340,25 @@ production vpc subnets route update
       route.addDependsOn(tgwDevVpcAttachment);
     }
 ```
-
-## Vpc with Ec2 Stack 
-vpc for dev department 
+on-prem vpc same 
 ```tsx
-// vpc with isolated subnet
-    this.vpc = new aws_ec2.Vpc(this, props.prefix!.concat("-VPC").toString(), {
-      vpcName: props.prefix!.concat("-VPC"),
-      cidr: props.cidr,
-      maxAzs: 1,
-      subnetConfiguration: [
-        {
-          cidrMask: props.cidrMask,
-          name: props.prefix!.concat("-VPC | ISOLATED"),
-          subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
-        },
-      ],
-    });
-```
-security group for ec2 allow ICMP-ping
-```tsx
-// security group for ec2
-this.securityGroup = new aws_ec2.SecurityGroup(
-  this,
-  props.prefix!.concat("-SG").toString(),
-  {
-    vpc: this.vpc,
-    description: "Allow ICMP ping and HTTPS",
-  }
-);
 
-// allow inbound ICMP ping
-this.securityGroup.addIngressRule(
-  aws_ec2.Peer.anyIpv4(),
-  aws_ec2.Port.allIcmp(),
-  "Allow ICMP"
-);
-```
-add ssm (3 endpoints needed isolated subnet)
-```tsx
-// vpc endpoints ssm (3 needed)
-new aws_ec2.InterfaceVpcEndpoint(
-  this,
-  props.prefix!.concat("-SSM").toString(),
-  {
-    service: aws_ec2.InterfaceVpcEndpointAwsService.SSM,
-    vpc: this.vpc,
-    privateDnsEnabled: true,
-    subnets: this.vpc.selectSubnets({
-      subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
-    }),
-  }
-);
-
-new aws_ec2.InterfaceVpcEndpoint(
-  this,
-  props.prefix!.concat("-SSM-MESSAGES").toString(),
-  {
-    service: aws_ec2.InterfaceVpcEndpointAwsService.SSM_MESSAGES,
-    vpc: this.vpc,
-    privateDnsEnabled: true,
-    subnets: this.vpc.selectSubnets({
-      subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
-    }),
-  }
-);
-
-new aws_ec2.InterfaceVpcEndpoint(
-  this,
-  props.prefix!.concat("-EC2-MESSAGES").toString(),
-  {
-    service: aws_ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
-    vpc: this.vpc,
-    privateDnsEnabled: true,
-    subnets: this.vpc.selectSubnets({
-      subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
-    }),
-  }
-);
 ```
 
-role for ec2 
-```tsx
-// ec2 role
-    this.ec2Role = new aws_iam.Role(this, "svcRoleForEc2ViaSsm", {
-      assumedBy: new aws_iam.ServicePrincipal("ec2.amazonaws.com"),
-      description: "Service role for EC2 access via SSM session manager",
-      managedPolicies: [
-        aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
-          "AmazonSSMManagedInstanceCore"
-        ),
-        aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
-          "AmazonSSMPatchAssociation"
-        ),
-      ],
-    });
+## Check and Troubleshooting 
+from an EC2 in the simulated on-prem ping VPCs
+```bash
+ping 
 ```
-
-create an ec2
-```tsx
-const ec2 = new aws_ec2.Instance(
-  this,
-  props.prefix!.concat("-Instance").toString(),
-  {
-    instanceType: aws_ec2.InstanceType.of(
-      aws_ec2.InstanceClass.T2,
-      aws_ec2.InstanceSize.MICRO
-    ),
-    role: props.ec2Role,
-    securityGroup: this.securityGroup,
-    vpc: this.vpc,
-    machineImage: new aws_ec2.AmazonLinuxImage({
-      cpuType: aws_ec2.AmazonLinuxCpuType.X86_64,
-      generation: aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    }),
-  }
-);
-ec2.node.addDependency(this.vpc);
+from an EC2 in a VPC ping other VPCs and on-prem
+```bash
+ping 
+```
+on the strongswan instance 
+```bash
+sudo tcpdump -eni any icmp
+```
+optionally
+```bash
+Reachability Analyzer Path 
 ```
