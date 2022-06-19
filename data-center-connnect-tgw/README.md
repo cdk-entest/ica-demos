@@ -10,7 +10,7 @@
 ```bash 
 cdk deploy AwsBaseNetwork
 ```
-#### Step 2. Create a simulated on-prem [HERE](https://aws.amazon.com/blogs/networking-and-content-delivery/simulating-site-to-site-vpn-customer-gateways-strongswan/)
+#### Step 2. Create a simulated on-prem (place-holder) [HERE](https://aws.amazon.com/blogs/networking-and-content-delivery/simulating-site-to-site-vpn-customer-gateways-strongswan/)
 ```
 cdk deploy SimulatedOnPrem
 ```
@@ -201,7 +201,7 @@ wait and check both tunnel UP
 sudo strongswan status
 ```
 
-## Step 5. Transit Gateway Routes, Attachments 
+## Step 5.1 Transit Gateway Routes, Attachments 
 create a tgw route table
 ```tsx
 // tgw route table
@@ -311,7 +311,7 @@ prod-vpc-attachment tgw-propogation
     );
 ```
 
-### Step 5. VPC Subnet Routes Update 
+## Step 5.2 VPC Subnet Routes Update 
 development vpc subnets route update
 ```tsx
 // development vpc subnets route update
