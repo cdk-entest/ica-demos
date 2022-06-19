@@ -1,0 +1,98 @@
+[
+  {
+    "ParameterKey": "pOrg",
+    "ParameterValue": "example"
+  },
+  {
+    "ParameterKey": "pSystem",
+    "ParameterValue": "infra"
+  },
+  {
+    "ParameterKey": "pApp",
+    "ParameterValue": "vpngw"
+  },
+  {
+    "ParameterKey": "pEnvPurpose",
+    "ParameterValue": "test15"
+  },
+  {
+    "ParameterKey": "pAuthType",
+    "ParameterValue": "psk"
+  },
+  {
+    "ParameterKey": "pTunnel1PskSecretName",
+    "ParameterValue": "pTunnel1PskSecretName"
+  },
+  {
+    "ParameterKey": "pTunnel1VgwOutsideIpAddress",
+    "ParameterValue": "34.227.182.74"
+  },
+  {
+    "ParameterKey": "pTunnel1CgwInsideIpAddress",
+    "ParameterValue": "169.254.86.242/30"
+  },
+  {
+    "ParameterKey": "pTunnel1VgwInsideIpAddress",
+    "ParameterValue": "169.254.86.241/30"
+  },
+  {
+    "ParameterKey": "pTunnel1VgwBgpAsn",
+    "ParameterValue": "65001"
+  },
+  {
+    "ParameterKey": "pTunnel1BgpNeighborIpAddress",
+    "ParameterValue": "169.254.86.241"
+  },
+  {
+    "ParameterKey": "pTunnel2PskSecretName",
+    "ParameterValue": "pTunnel2PskSecretName"
+  },
+  {
+    "ParameterKey": "pTunnel2VgwOutsideIpAddress",
+    "ParameterValue": "35.174.56.224"
+  },
+  {
+    "ParameterKey": "pTunnel2CgwInsideIpAddress",
+    "ParameterValue": "169.254.127.134/30"
+  },
+  {
+    "ParameterKey": "pTunnel2VgwInsideIpAddress",
+    "ParameterValue": "169.254.127.133/30"
+  },
+  {
+    "ParameterKey": "pTunnel2VgwBgpAsn",
+    "ParameterValue": "65001"
+  },
+  {
+    "ParameterKey": "pTunnel2BgpNeighborIpAddress",
+    "ParameterValue": "169.254.127.133"
+  },
+  {
+    "ParameterKey": "pVpcId",
+    "ParameterValue": "vpc-076f00037e2f53221"
+  },
+  {
+    "ParameterKey": "pVpcCidr",
+    "ParameterValue": "172.16.0.0/16"
+  },
+  {
+    "ParameterKey": "pSubnetId",
+    "ParameterValue": "subnet-0703b289898d65a1b"
+  },
+  {
+    "ParameterKey": "pUseElasticIp",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "pEipAllocationId",
+    "ParameterValue": "eipalloc-0203490ac8f7656eb"
+  },
+  {
+    "ParameterKey": "pLocalBgpAsn",
+    "ParameterValue": "65501"
+  },
+  {
+    "ParameterKey": "pInstanceType",
+    "ParameterValue": "t3a.micro"
+  }
+]
