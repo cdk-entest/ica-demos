@@ -29,7 +29,7 @@ def fetch_restaurant_summary(restaurant_name):
     print(f'cache query latency {(end - start) * 1000:.4f}ms')
     # hit cache and return 
     if restaurant:
-        # print_restaurant(restaurant)
+        print_restaurant(restaurant)
         print("Using cached result!")
         return (end-start)*1000
     # mis-cache and fetch from db
@@ -60,7 +60,7 @@ def fetch_restaurant_summary_from_db(restaurant_name):
     print(f'db query latency {(end - start) * 1000: .4f}ms')
     restaurant = Restaurant(resp["Items"][0])
     restaurant.reviews = [Review(item) for item in resp["Items"][1:]]
-    # print_restaurant(restaurant)
+    print_restaurant(restaurant)
     # return 
     return (end-start)*1000
 
