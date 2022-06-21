@@ -1,6 +1,30 @@
 # Elastic Cached for Redis and DynamoDB 
 
+[Reference - Deploy Amazon ElasticCache for Redis using AWS CDK](https://aws.amazon.com/blogs/database/deploy-amazon-elasticache-for-redis-using-aws-cdk/)
+
+
+Customer stories  
+- [Impatient web users 100ms means 1%$ sale loss](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/elasticache-use-cases.html)
+- [Tinder billions matches daily](https://aws.amazon.com/blogs/database/building-resiliency-at-scale-at-tinder-with-amazon-elasticache/?pg=ln&sec=c)
+- [AppSync](https://docs.aws.amazon.com/appsync/latest/devguide/enabling-caching.html)
+- [Game session](https://aws.amazon.com/blogs/gametech/building-a-presence-api-using-aws-appsync-aws-lambda-amazon-elasticache-and-amazon-eventbridge/)
+
+When to use? 
+- Speed and expense - expensive queries 
+- Data and access pattern - relatively static and frequent accessed - personal profile
+
+Performance
+- [quotas](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/quota-limits.html)
+- [best best practice](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
+  - [Node type: M5 or R5](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/nodes-select-size.html)
+  - Launch in a private subnet 
+  - Security group (Redis 6739, Memcached 11211)
+  - Encryption TSL/SSL 
+  - [Lazy vs write-through](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+
 ## Architecture 
+
+<img width="842" alt="DBBLOG-1922-image001" src="https://user-images.githubusercontent.com/20411077/173473810-3c09d636-3445-4a6c-99c5-6c31db902079.png" />
 
 
 ## Redis Cluster Stack
