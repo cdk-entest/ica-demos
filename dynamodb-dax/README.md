@@ -134,6 +134,34 @@ create a DAX cluster
   });
 ```
 
+## DAX Python Client 
+```python
+# dax client 
+dax = amazondax.AmazonDaxClient.resource(endpoint_url=DAX_ENDPOINT)
+# table  
+table = dax.Table(table_name)
+```
+get item by primary key 
+```python
+ table.get_item(
+      Key={"UserId": user_id}
+    )
+```
+write an item to table 
+```python
+table.put_item(
+              Item={
+                  'UserId': str(uuid.uuid1()),
+                  "UserName": names.get_full_name(),
+                  'GameTitle': game_title,
+                  'Score': random.randint(1000, 6000),
+                  'Wins': random.randint(0, 100),
+                  'Losses': random.randint(5, 50),
+                  'CreatedTime': int(datetime.datetime.now().timestamp() * 1000)
+              }
+          )
+```
+
 ## DAX Client Performance Check 
 get table [amazondax python client](https://pypi.org/project/amazon-dax-client/) 
 ```python
@@ -189,33 +217,6 @@ def get_items_by_primary_key(table_name: str, mode='dax', no_user=100):
   return {"latencies": latencies[2:], "items": items[2:]}
 ```
 
-## DAX Python Client 
-```python
-# dax client 
-dax = amazondax.AmazonDaxClient.resource(endpoint_url=DAX_ENDPOINT)
-# table  
-table = dax.Table(table_name)
-```
-get item by primary key 
-```python
- table.get_item(
-      Key={"UserId": user_id}
-    )
-```
-write an item to table 
-```python
-table.put_item(
-              Item={
-                  'UserId': str(uuid.uuid1()),
-                  "UserName": names.get_full_name(),
-                  'GameTitle': game_title,
-                  'Score': random.randint(1000, 6000),
-                  'Wins': random.randint(0, 100),
-                  'Losses': random.randint(5, 50),
-                  'CreatedTime': int(datetime.datetime.now().timestamp() * 1000)
-              }
-          )
-```
 
 ## DynamoDB Table and Prepare Data 
 ```python
