@@ -13,14 +13,18 @@ When to use?
 - Speed and expense - expensive queries 
 - Data and access pattern - relatively static and frequent accessed - personal profile
 
-Performance
+Best practices
 - [quotas](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/quota-limits.html)
-- [best best practice](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
-  - [Node type: M5 or R5](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/nodes-select-size.html)
-  - Launch in a private subnet 
-  - Security group (Redis 6739, Memcached 11211)
-  - Encryption TSL/SSL 
-  - [Lazy vs write-through](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+- [elastic cache re-invent 2021 8:22](https://www.youtube.com/watch?v=_4SkEy6r-C4)
+  - cluster-mode, add replica - read capacity, add shards - write capacity
+  - cloudwatch metric & alarm, sns
+- [white paper](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
+- [node type: M5 or R5](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/nodes-select-size.html)
+- Launch in a private subnet 
+- Security group (Redis 6739, Memcached 11211)
+- Encryption TSL/SSL 
+- [lazy vs write-through](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+  
 
 ## Architecture 
 
