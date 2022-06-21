@@ -24,7 +24,9 @@ Performance
 
 ## Architecture 
 
-<img width="842" alt="DBBLOG-1922-image001" src="https://user-images.githubusercontent.com/20411077/173473810-3c09d636-3445-4a6c-99c5-6c31db902079.png" />
+![aws_devops-Expriment drawio](https://user-images.githubusercontent.com/20411077/174738633-08a093cf-f99e-404e-934c-6efcb0f01e35.png)
+
+![redis-ddb-performance](https://user-images.githubusercontent.com/20411077/174738791-b077c658-33e7-4bd8-a2a4-8fcc4cc5b041.png)
 
 
 ## Redis Cluster Stack
