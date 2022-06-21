@@ -15,6 +15,7 @@ When to use?
 
 Best practices
 - [quotas](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/quota-limits.html)
+- [replication group or cluster](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.Terms.html)
 - [elastic cache re-invent 2021 8:22](https://www.youtube.com/watch?v=_4SkEy6r-C4)
   - cluster-mode, add replica - read capacity, add shards - write capacity
   - cloudwatch metric & alarm, sns
