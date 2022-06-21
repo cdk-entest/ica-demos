@@ -19,7 +19,10 @@ References:
 
 
 ## Architecture 
-![dax_high_level e4af7cc27485497eff5699cdf22a9502496cba38](https://user-images.githubusercontent.com/20411077/173214194-f539fe34-638a-4ad0-b1e7-16dc7dfef642.png)
+
+![aws_devops-Expriment drawio(3)](https://user-images.githubusercontent.com/20411077/174743120-a5404357-b6af-48f2-b365-6a0933857c07.png)
+
+
 ![dax_performance](https://user-images.githubusercontent.com/20411077/173296706-6ad579f8-9a89-4bc7-bd37-313b6cacfa49.png)
 
 
