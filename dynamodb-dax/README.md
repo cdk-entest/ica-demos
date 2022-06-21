@@ -7,6 +7,7 @@
 - Single digit milisecond latency (micro-second)
 - Less operation and complexity (easy code change)
 - Handle read-heavy and bursty workloads 
+- [Increase performance while recuding costs](https://aws.amazon.com/blogs/database/how-to-increase-performance-while-reducing-costs-by-using-amazon-dynamodb-accelerator-dax-and-aws-lambda/)
 
 Concepts/Parameters:
 - [Consistency model](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html)
