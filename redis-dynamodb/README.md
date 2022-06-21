@@ -18,7 +18,8 @@ Best practices
 - [elastic cache re-invent 2021 8:22](https://www.youtube.com/watch?v=_4SkEy6r-C4)
   - cluster-mode, add replica - read capacity, add shards - write capacity
   - cloudwatch metric & alarm, sns
-  - HA - replica multi-az, primary failure handle
+  - two read replica node per shard, primary nodes accross azs, failover primary
+  -[IAM auth](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/IAM.Overview.html#IAM.Overview.ManagingAccess)
 - [white paper](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
 - [node type: M5 or R5](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/nodes-select-size.html)
 - Launch in a private subnet 
