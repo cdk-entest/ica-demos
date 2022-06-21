@@ -17,6 +17,7 @@ dynamodb = boto3.client("dynamodb")
 # redis client
 r = redis.Redis(host=HOST)
 
+
 def fetch_restaurant_summary(restaurant_name):
     """
     fetch from cache and write to cache 
@@ -217,7 +218,75 @@ class Review:
 
 
 
-  
+# create table 
+def create_table():
+    """
+    """
+    dynamodb = boto3.client("dynamodb")
+    try:
+        dynamodb.create_table(
+        TableName="Restaurants",
+        AttributeDefinitions=[
+            {"AttributeName": "PK", "AttributeType": "S"},
+            {"AttributeName": "SK", "AttributeType": "S"},
+            {"AttributeName": "GSI1PK", "AttributeType": "S"},
+            {"AttributeName": "GSI1SK", "AttributeType": "S"},
+        ],
+        KeySchema=[
+            {"AttributeName": "PK", "KeyType": "HASH"},
+            {"AttributeName": "SK", "KeyType": "RANGE"},
+        ],
+        GlobalSecondaryIndexes=[
+            {
+                "IndexName": "GSI1",
+                "KeySchema": [
+                    {"AttributeName": "GSI1PK", "KeyType": "HASH"},
+                    {"AttributeName": "GSI1SK", "KeyType": "RANGE"},
+                ],
+                "Projection": {"ProjectionType": "ALL"},
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 5,
+                    "WriteCapacityUnits": 5,
+                },
+            }
+        ],
+        ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5})
+        print("Table created successfully.")
+    except Exception as e:
+        print("Could not create table. Error:")
+        print(e)
+
+
+def delete_table():
+    """
+    """
+    dynamodb = boto3.client("dynamodb")
+    try:
+        dynamodb.delete_table(TableName="Restaurants")
+        print("Table deleted successfully.")
+    except Exception as e:
+        print("Could not delete table. Please try again in a moment. Error:")
+        print(e)
+
+
+def bulk_load_table():
+    """
+    """
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table("Restaurants")
+    items = []
+
+    with open("scripts/items.json", "r") as f:
+        for row in f:
+            items.append(json.loads(row))
+
+    with table.batch_writer() as batch:
+        for item in items:
+            batch.put_item(Item=item)
+
+    print("Items loaded successfully.")
+
+
 # ===================================================================
 if __name__=="__main__":
     test_connect()
