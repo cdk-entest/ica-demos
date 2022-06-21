@@ -10,6 +10,7 @@
 - [Increase performance while recuding costs](https://aws.amazon.com/blogs/database/how-to-increase-performance-while-reducing-costs-by-using-amazon-dynamodb-accelerator-dax-and-aws-lambda/)
 
 Concepts/Parameters:
+- [Typical hit rate 85-95%](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.sizing-guide.html)
 - [Consistency model](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.consistency.html)
 - [Modify application](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.client.modify-your-app.html)
 - [TTL setting](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.cluster-management.html#DAX.cluster-management.custom-settings.ttl)
@@ -27,7 +28,7 @@ References:
 ![dax_performance](https://user-images.githubusercontent.com/20411077/173296706-6ad579f8-9a89-4bc7-bd37-313b6cacfa49.png)
 
 
-## DAX Cluster Stack 
+## DAX Cluster Stack
 subnet group 
 ```tsx
 // get existed vpc
