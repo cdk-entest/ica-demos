@@ -1,5 +1,7 @@
 # Migrate Microsoft SQL to Aurora MySQL 
 
+[AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US/sqlserver-aurora)
+
 ## Architecture 
 
 <img width="802" alt="SqlServerDmsDiagram" src="https://user-images.githubusercontent.com/20411077/174956389-d62cda7c-2e04-473b-b556-cd187ff7970c.png">
