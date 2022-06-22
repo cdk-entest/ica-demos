@@ -2,6 +2,9 @@
 
 ## Architecture 
 
+<img width="802" alt="SqlServerDmsDiagram" src="https://user-images.githubusercontent.com/20411077/174956389-d62cda7c-2e04-473b-b556-cd187ff7970c.png">
+
+
 ## Microsft SQL in an EC2 
 ```tsx
  // security group
@@ -220,6 +223,13 @@ SELECT ('Sorry, no tickets are available for transfer.');
 - apply to database dms_sample_dbo schema 
 
 
+![Screen Shot 2022-06-22 at 13 12 43](https://user-images.githubusercontent.com/20411077/174956483-621f8528-5be4-42e3-8a1d-3e7ca1f77eb8.png)
+
+
+![Screen Shot 2022-06-22 at 13 12 12](https://user-images.githubusercontent.com/20411077/174956509-c7344bbc-489c-456c-8887-d160d77299cc.png)
+
+
+
 ## DMS replication instance and endpoints  
 get existed vpc 
 ```tsx
@@ -355,3 +365,4 @@ replication task with rules
 
 ## Check results 
 
+![Screen Shot 2022-06-22 at 13 03 13](https://user-images.githubusercontent.com/20411077/174956529-6987b55d-2157-42d9-a2f3-d52962728c2d.png)
