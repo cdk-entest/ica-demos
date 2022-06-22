@@ -1,6 +1,7 @@
 # Migrate Microsoft SQL to Aurora MySQL 
 
-[AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US/sqlserver-aurora)
+- [AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US/sqlserver-aurora)
+- [DMS Re-invent 2019 John Winford ](https://www.youtube.com/watch?v=kJs9U4ys5FE)
 
 ## Architecture 
 
