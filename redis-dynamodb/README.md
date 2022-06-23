@@ -15,6 +15,7 @@ When to use?
 - Data and access pattern - relatively static and frequent accessed - personal profile
 
 Best practices
+- [Re-invent 2020 Damon LaCaille 7:48](https://www.youtube.com/watch?v=_4SkEy6r-C4)
 - [quotas](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/quota-limits.html)
 - [replication group or cluster](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.Terms.html)
 - [elastic cache re-invent 2021 8:22](https://www.youtube.com/watch?v=_4SkEy6r-C4)
@@ -125,6 +126,17 @@ def fetch_restaurant_summary(restaurant_name):
     print("Using uncached result!")
     return restaurant
 ```
+write to cache
+```python 
+def store_restaurant_summary_in_cache(restaurant):
+    """
+    store to cache
+    """
+    key = restaurant.name
+    r.set(key, json.dumps(restaurant, cls=ObjectEncoder), ex=900)
+
+    return True
+```
 
 ## DynamoDB Table 
 create a restaurant table with global secondary index 
@@ -168,7 +180,7 @@ except Exception as e:
     print(e)
 ```
 
-bach writing the table 
+batch writing the table 
 ```python
 import json
 import boto3
