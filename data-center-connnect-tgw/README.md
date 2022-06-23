@@ -6,7 +6,6 @@
 ![aws_devops-Expriment drawio (1)](https://user-images.githubusercontent.com/20411077/174434954-d3d3084e-3061-48cb-8786-65a727689acd.png)
 
 
-
 Customers  
 - [TREND MICRO](https://aws.amazon.com/transit-gateway/customers/)
 
@@ -17,6 +16,7 @@ When to use/use cases?
 - [Direct Connect - TGW](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway-vpn.html) Public VIF (VPN)
 
 Best practices 
+- [TGW Re-invent 2020 Nicola Arnoldi 4:08](https://www.youtube.com/watch?v=cj1rQqLxXU8)
 - [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html#bandwidth-quotas): 5000 attachments, 50Gbps per VPC attachment, and ...
 - [Direct connection location](https://aws.amazon.com/directconnect/locations/)
 - [docs aws](https://docs.aws.amazon.com/) **RECOMMENDED**
