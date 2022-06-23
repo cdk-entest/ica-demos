@@ -23,8 +23,8 @@ Essential concepts
 - [AWS SCT](https://aws.amazon.com/dms/schema-conversion-tool/)
 
 Best practices 
-- [AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US/sqlserver-aurora)
 - [DMS Re-invent 2019 John Winford 29:30](https://www.youtube.com/watch?v=kJs9U4ys5FE)
+- [AWS Database Migration Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/77bdff4f-2d9e-4d68-99ba-248ea95b3aca/en-US/sqlserver-aurora)
 - [continuous database replication](https://aws.amazon.com/blogs/database/continuous-database-replication-using-aws-dms-to-migrate-from-oracle-to-amazon-aurora/)
 - [Migration and modernization strategies](https://aws.amazon.com/blogs/modernizing-with-aws/migration-modernization-strategies-sql-on-aws/)
 - [need help](https://aws.amazon.com/products/databases/migrations/)
