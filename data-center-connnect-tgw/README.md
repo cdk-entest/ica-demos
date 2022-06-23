@@ -16,11 +16,11 @@ When to use/use cases?
 - [Direct Connect - TGW](https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/aws-direct-connect-aws-transit-gateway-vpn.html) Public VIF (VPN)
 
 Best practices 
-- [TGW Re-invent 2020 Nicola Arnoldi 4:08](https://www.youtube.com/watch?v=cj1rQqLxXU8)
-- [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html#bandwidth-quotas): 5000 attachments, 50Gbps per VPC attachment, and ...
+- [Re-invent 2020 Nicola Arnoldi 4:08](https://www.youtube.com/watch?v=cj1rQqLxXU8)
 - [Direct connection location](https://aws.amazon.com/directconnect/locations/)
 - [docs aws](https://docs.aws.amazon.com/) **RECOMMENDED**
 - [TGW FAQ](https://aws.amazon.com/transit-gateway/faqs/)
+- [Quota](https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-quotas.html#bandwidth-quotas): 5000 attachments, 50Gbps per VPC attachment, and ...
 
 Essential Concepts
 - [TGW attachment, association, propogation, route table](https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html)
