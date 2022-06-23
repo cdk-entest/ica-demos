@@ -16,8 +16,8 @@ Concepts/Parameters:
 - [TTL setting](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.cluster-management.html#DAX.cluster-management.custom-settings.ttl)
 - [Encryption, KMS, TLS](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAXEncryptionInTransit.html)
 
-References:
-- [Read/Write-through cache - transparent to application](https://aws.amazon.com/blogs/database/amazon-dynamodb-accelerator-dax-a-read-throughwrite-through-cache-for-dynamodb/)
+Caching strategies:
+- [Read-through/Write-through cache - transparent to application](https://aws.amazon.com/blogs/database/amazon-dynamodb-accelerator-dax-a-read-throughwrite-through-cache-for-dynamodb/)
 
 
 ## Architecture 

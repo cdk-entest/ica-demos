@@ -16,14 +16,13 @@ Performance
 - [quotas](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/quota-limits.html)
 - [best best practice](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
   - [Node type: M5 or R5](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/nodes-select-size.html)
-  - Launch in a private subnet 
-  - Security group (Redis 6739, Memcached 11211)
-  - Encryption TSL/SSL 
-  - [Lazy vs write-through](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+  - Launch in a private subnet, security group, encryption TSL/SSL
+  - [redis cahing strategies](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+  - [read-through/write-through dax](https://aws.amazon.com/blogs/database/amazon-dynamodb-accelerator-dax-a-read-throughwrite-through-cache-for-dynamodb/)
 
 ## Architecture 
 
-<img width="842" alt="DBBLOG-1922-image001" src="https://user-images.githubusercontent.com/20411077/173473810-3c09d636-3445-4a6c-99c5-6c31db902079.png">
+<img width="842" alt="DBBLOG-1922-image001" src="https://user-images.githubusercontent.com/20411077/173473810-3c09d636-3445-4a6c-99c5-6c31db902079.png" />
 
 
 ## ElasticCache Cluster 

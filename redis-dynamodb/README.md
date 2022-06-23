@@ -23,10 +23,9 @@ Best practices
   -[IAM auth](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/IAM.Overview.html#IAM.Overview.ManagingAccess)
 - [white paper](https://d0.awsstatic.com/whitepapers/performance-at-scale-with-amazon-elasticache.pdf)
 - [node type: M5 or R5](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/nodes-select-size.html)
-- Launch in a private subnet 
-- Security group (Redis 6739, Memcached 11211)
-- Encryption TSL/SSL 
-- [lazy vs write-through](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+- Private subnet, security group, encryption TSL/SSL 
+- [redis cahing strategies](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html#Strategies.WriteThrough)
+- [read-through/write-through dax](https://aws.amazon.com/blogs/database/amazon-dynamodb-accelerator-dax-a-read-throughwrite-through-cache-for-dynamodb/)
   
 
 ## Architecture 
