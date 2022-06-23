@@ -5,6 +5,7 @@
 Customer stories  
 - [Impatient web users 100ms means 1%$ sale loss](https://docs.aws.amazon.com/AmazonElastiCache/latest/mem-ug/elasticache-use-cases.html)
 - [Tinder billions matches daily](https://aws.amazon.com/blogs/database/building-resiliency-at-scale-at-tinder-with-amazon-elasticache/?pg=ln&sec=c)
+- [Elasticache redis customers](https://aws.amazon.com/elasticache/redis/customers/)
 - [AppSync](https://docs.aws.amazon.com/appsync/latest/devguide/enabling-caching.html)
 - [Game session](https://aws.amazon.com/blogs/gametech/building-a-presence-api-using-aws-appsync-aws-lambda-amazon-elasticache-and-amazon-eventbridge/)
 
