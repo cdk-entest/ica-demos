@@ -33,6 +33,16 @@ export class RdsLambdaStack extends Stack {
       vpcName: props.vpcName,
     });
 
+    // add vpc endpoint for getting secrete access
+    vpc.addInterfaceEndpoint("SecreteManagerVpcEndpoint", {
+      service:
+        aws_ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      privateDnsEnabled: true,
+      subnets: {
+        subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
+      },
+    });
+
     // db crentials
     const credentials = aws_rds.Credentials.fromGeneratedSecret(
       "mysqlSecret",
@@ -41,21 +51,21 @@ export class RdsLambdaStack extends Stack {
       }
     );
 
-    // security group db 
+    // security group db
     const securityGroup = new aws_ec2.SecurityGroup(
       this,
       "SecurityGroupForRdsMySql",
       {
         securityGroupName: "SecurityGroupForRdsMySql",
-        vpc: vpc
+        vpc: vpc,
       }
-    ) 
+    );
 
-    // production => move db to private subnet 
+    // production => move db to private subnet
     securityGroup.addIngressRule(
       aws_ec2.Peer.anyIpv4(),
       aws_ec2.Port.tcp(3306)
-    )
+    );
 
     // RDS database instance
     const rds = new aws_rds.DatabaseInstance(
@@ -76,12 +86,10 @@ export class RdsLambdaStack extends Stack {
         vpc,
         vpcSubnets: {
           // production => private subnet
-          subnetType: aws_ec2.SubnetType.PUBLIC,
+          subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
         },
         credentials: credentials,
-        securityGroups: [
-          securityGroup
-        ]
+        securityGroups: [securityGroup],
       }
     );
 
@@ -135,6 +143,10 @@ export class RdsLambdaStack extends Stack {
       memorySize: 256,
       role,
       vpc,
+      vpcSubnets: {
+        subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
+      },
+      securityGroups: [securityGroup],
       environment: {
         SECRET_ARN: rds.secret!.secretFullArn
           ? rds.secret!.secretFullArn
@@ -150,3 +162,4 @@ export class RdsLambdaStack extends Stack {
     });
   }
 }
+

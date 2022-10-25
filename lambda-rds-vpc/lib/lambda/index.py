@@ -1,33 +1,30 @@
-
 """
 - simple lambda function
 - double check the lambda handler name 
 """
-import os 
+import os
 import datetime
 import json
 import boto3
 import pymysql
 
-# get secret arn from lambda env variable 
-SECRET_ARN = os.environ['SECRET_ARN']
+# get secret arn from lambda env variable
+SECRET_ARN = os.environ["SECRET_ARN"]
 # region
-REGION = 'ap-southeast-1'
+REGION = "ap-southeast-1"
 
 # databse credentials => secret manager
 # host = "database-3.c3x7jlemonqv.ap-southeast-1.rds.amazonaws.com"
 # user = "admin"
 # password = "Mike865525"
 # port = 3306
-dbName = 'IcaDb'
+dbName = "IcaDb"
 
 # get credenetials
-secrete_client = boto3.client('secretsmanager', region_name=REGION)
+secrete_client = boto3.client("secretsmanager", region_name=REGION)
 
 # get secret string
-secret = secrete_client.get_secret_value(
-    SecretId=SECRET_ARN
-)
+secret = secrete_client.get_secret_value(SecretId=SECRET_ARN)
 
 # parse db information
 secret_dic = json.loads(secret["SecretString"])
@@ -40,16 +37,14 @@ password = secret_dic["password"]
 port = secret_dic["port"]
 
 # secret manager
-SECRET_ARN = ""
+SECRET_ARN = (
+    "arn:aws:secretsmanager:ap-southeast-1:$ACCOUNT_ID:secret:mysql-secret-name-16JD6g"
+)
 
 
 # connect
 conn = pymysql.connect(
-    host=host,
-    user=user,
-    password=password,
-    port=port,
-    database=dbName
+    host=host, user=user, password=password, port=port, database=dbName
 )
 
 
@@ -78,13 +73,13 @@ def handler(event, context) -> json:
     res = fetch_data()
     # return
     return {
-        'statusCode': 200,
-        'headers': {
+        "statusCode": 200,
+        "headers": {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Methods": "OPTIONS,GET"
+            "Access-Control-Allow-Methods": "OPTIONS,GET",
         },
-        'body': json.dumps(res)
+        "body": json.dumps(res),
     }
 
 

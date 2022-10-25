@@ -1,4 +1,3 @@
-
 """
 - simple lambda function
 - double check the lambda handler name 
@@ -12,18 +11,18 @@ import boto3
 import pymysql
 
 #
-SECRET_ARN = "arn:aws:secretsmanager:ap-southeast-1:392194582387:secret:mysql-secret-name-Gakb30"
+SECRET_ARN = (
+    "arn:aws:secretsmanager:ap-southeast-1:392194582387:secret:mysql-secret-name-W4OOBX"
+)
 
 # region
-REGION = 'ap-southeast-1'
+REGION = "ap-southeast-1"
 
 # get credenetials
-secrete_client = boto3.client('secretsmanager', region_name=REGION)
+secrete_client = boto3.client("secretsmanager", region_name=REGION)
 
 # get secret string
-secret = secrete_client.get_secret_value(
-    SecretId=SECRET_ARN
-)
+secret = secrete_client.get_secret_value(SecretId=SECRET_ARN)
 
 # parse db information
 secret_dic = json.loads(secret["SecretString"])
@@ -48,15 +47,14 @@ print("CONNECTED")
 
 
 def create_database(database: str):
-    """
-    """
+    """ """
     cusor = conn.cursor()
-    cusor.execute('SHOW DATABASES')
+    cusor.execute("SHOW DATABASES")
     dbs = cusor.fetchall()
     # list of dbs
     dbs_list = [db[0] for db in dbs]
     # create IcaDb if not existed yet
-    if (database in dbs_list):
+    if database in dbs_list:
         pass
     else:
         cusor.execute("CREATE DATABASE IcaDb")
@@ -67,11 +65,7 @@ def create_table(database: str):
     create a table inside a database
     """
     conn = pymysql.connect(
-        host=host,
-        user=user,
-        passwd=password,
-        port=port,
-        database=database
+        host=host, user=user, passwd=password, port=port, database=database
     )
     # cursor
     cur = conn.cursor()
@@ -92,8 +86,10 @@ def create_table(database: str):
     now = datetime.datetime.now()
     time_stamp = now.strftime("%Y/%m/%d-%H:%M:%S.%f")
     # employees (id, name, age, time)
-    employees = [(k, names.get_full_name(), random.randint(
-        20, 100),  time_stamp) for k in range(1, 100)]
+    employees = [
+        (k, names.get_full_name(), random.randint(20, 100), time_stamp)
+        for k in range(1, 100)
+    ]
     # tuple
     employees = tuple(employees)
     stmt_insert = "INSERT INTO employees (id, name, age, time) VALUES (%s, %s, %s, %s)"
@@ -103,7 +99,7 @@ def create_table(database: str):
     cur.execute("SHOW TABLES")
     tables = cur.fetchall()
     for table in tables:
-        print(f'table: {table}')
+        print(f"table: {table}")
 
 
 def fetch_data(database: str):
@@ -111,11 +107,7 @@ def fetch_data(database: str):
     query data
     """
     conn = pymysql.connect(
-        host=host,
-        user=user,
-        passwd=password,
-        port=port,
-        database=database
+        host=host, user=user, passwd=password, port=port, database=database
     )
     # cursor
     cur = conn.cursor()
@@ -135,7 +127,8 @@ def fetch_data(database: str):
 
 # test
 if __name__ == "__main__":
+    # print("Hello")
     # create_database(database="IcaDb")
-    create_table(database="IcaDb")
-    # fetch_data(database="IcaDb")
+    # create_table(database="IcaDb")
+    fetch_data(database="IcaDb")
     # pass

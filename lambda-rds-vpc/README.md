@@ -1,6 +1,16 @@
-# Lambda Access RDS in a VPC 
+---
+title: Lambda Access RDS in a VPC 
+author: haimtran 
+description: lambda function access rds in a vpc using vpc endpoints  
+publishedDate: 25/10/2022
+date: 25/10/2022
+---
 
-## Architecture 
+## Introduction 
+- create a RDS in private subnest 
+- add vpc endpoints so lambda can access rds and secrete manager
+- check lambda and rds security group
+- test lambda fetch data from rds tables 
 
 ## RDS Stack 
 get the existed vpc 
@@ -10,6 +20,20 @@ const vpc = aws_ec2.Vpc.fromLookup(this, "Vpc", {
   vpcName: props.vpcName,
 });
 ```
+
+add vpc endpoint to access secrete manager
+
+```tsx
+vpc.addInterfaceEndpoint("SecreteManagerVpcEndpoint", {
+  service:
+    aws_ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+  privateDnsEnabled: true,
+  subnets: {
+    subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
+  },
+});
+```
+
 db credentials by secret manager 
 ```tsx 
 const credentials = aws_rds.Credentials.fromGeneratedSecret(
@@ -19,7 +43,9 @@ const credentials = aws_rds.Credentials.fromGeneratedSecret(
   }
 );
 ```
-aws rds db instance 
+
+
+aws rds db instance in private subnets
 ```tsx
 const rds = new aws_rds.DatabaseInstance(
       this,
@@ -39,9 +65,10 @@ const rds = new aws_rds.DatabaseInstance(
         vpc,
         vpcSubnets: {
           // production => private subnet
-          subnetType: aws_ec2.SubnetType.PUBLIC,
+          subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
         },
         credentials: credentials,
+        securityGroups: [securityGroup]
       }
     );
 ```
@@ -85,6 +112,7 @@ role.addManagedPolicy(
   )
 );
 ```
+
 lambda function in vpc 
 ```tsx
 new aws_lambda.Function(this, "LambdaRdsVpc", {
@@ -98,6 +126,9 @@ new aws_lambda.Function(this, "LambdaRdsVpc", {
       memorySize: 512,
       role,
       vpc,
+      vpcSubnets: {
+        subnetType: aws_ec2.SubnetType.PRIVATE_ISOLATED,
+      },
       environment: {
         SECRET_ARN:
           (credentials.secret &&
@@ -106,6 +137,7 @@ new aws_lambda.Function(this, "LambdaRdsVpc", {
       },
     });
 ```
+
 stack output 
 ```tsx
 new CfnOutput(this, "SECRET_ARN", {
@@ -290,3 +322,11 @@ def create_table(database: str):
     for table in tables:
         print(f'table: {table}')
 ```
+
+## Troubleshooting 
+run create_table.py to test 
+- get rds credentials from secrete manager 
+- rds connector, lambda and rds subnets and security group 
+- create IcaDb database 
+- create employee table in IcaDb database
+- fetch data from employee table
